@@ -1,6 +1,6 @@
 # Httping go
 
-A helper to create APIs on golang
+A helper to create APIs on golang with [JSend responses](https://github.com/omniti-labs/jsend)
 
 ## Getting started
 

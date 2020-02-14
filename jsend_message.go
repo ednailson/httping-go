@@ -15,12 +15,12 @@ const (
 )
 
 func NewJSendMessage(statusCode int) *JSendMessage {
-	statusString := StatusSuccess
 	switch {
 	case statusCode >= 500:
-		statusString = StatusError
+		return &JSendMessage{Status: StatusError}
 	case statusCode >= 400 && statusCode < 500:
-		statusString = StatusFail
+		return &JSendMessage{Status: StatusFail}
+	default:
+		return &JSendMessage{Status: StatusSuccess}
 	}
-	return &JSendMessage{Status: statusString}
 }
