@@ -1,6 +1,6 @@
 # Httping go
 
-A helper to create an API on golang
+A helper to create APIs on golang
 
 ## Getting started
 
@@ -51,7 +51,7 @@ err := routeExample.AddMethod("POST", func(request HttpRequest) (statusCode int,
 })
 ```
 
-A **method** `POST` is now available on the **route** `/example`.
+A **method** `POST` is now available on the **route** `http://localhost:3000/example`.
 
 _p.s.: only http methods and http codes are allowed_
 
@@ -66,4 +66,7 @@ err := routeExample.AddMethod("GET", func(request HttpRequest) (statusCode int, 
 })
 ```
 
-## 
+Now the route `http://localhost:3000/example` has the **methods** `GET` and `POST`.
+# Developer
+
+[Júnior Vilas Boas](http://ednailson.github.io)
