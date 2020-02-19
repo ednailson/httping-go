@@ -43,7 +43,7 @@ So now there are two new **routes**: `http://localhost:3000/example/create` and 
 ### Adding a method on the route
 
 ```go
-err := routeExample.AddMethod("POST", func(request HttpRequest) (statusCode int, response *JSendMessage) {
+err := routeExample.AddMethod("POST", func(request HttpRequest) (int, *JSendMessage) {
     if len(request.body) === 0 {
         return 404, httping.NewJSendMessage(404)
     }
@@ -58,7 +58,7 @@ _p.s.: only http methods and http codes are allowed_
 And it is possible to add different **methods** on the same **route**. 
 
 ```go
-err := routeExample.AddMethod("GET", func(request HttpRequest) (statusCode int, response *JSendMessage) {
+err := routeExample.AddMethod("GET", func(request HttpRequest) (int, *JSendMessage) {
     if len(request.body) === 0 {
         return 404, httping.NewJSendMessage(404)
     }
@@ -67,6 +67,15 @@ err := routeExample.AddMethod("GET", func(request HttpRequest) (statusCode int, 
 ```
 
 Now the route `http://localhost:3000/example` has the **methods** `GET` and `POST`.
+
+If you will not use the route two or more times you can directly create a route and add a method 
+
+```go
+err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.JSendMessage) {
+		return http.StatusOK, httping.NewJSendMessage(http.StatusOK)
+	})
+```
+
 # Developer
 
 [Júnior Vilas Boas](http://ednailson.github.io)
