@@ -2,11 +2,12 @@ package httping
 
 import (
 	"bytes"
-	"fmt"
 	. "github.com/onsi/gomega"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"testing"
+	"time"
 )
 
 const port = 5001
@@ -38,14 +39,9 @@ func TestNewRouteWithPOST(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
 	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSendMessage(http.StatusOK)
+		return http.StatusOK, NewJSend(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
-	err = route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
-	})
-	Expect(err).Should(HaveOccurred())
-	Expect(err.Error()).Should(BeEquivalentTo(fmt.Sprintf("route %s already has a method %s", defaultPath, method)))
 }
 
 func TestNewRouteWithGET(t *testing.T) {
@@ -57,14 +53,9 @@ func TestNewRouteWithGET(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
 	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSendMessage(http.StatusOK)
+		return http.StatusOK, NewJSend(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
-	err = route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
-	})
-	Expect(err).Should(HaveOccurred())
-	Expect(err.Error()).Should(BeEquivalentTo(fmt.Sprintf("route %s already has a method %s", defaultPath, method)))
 }
 
 func TestNewRouteWithPUT(t *testing.T) {
@@ -76,14 +67,9 @@ func TestNewRouteWithPUT(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
 	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSendMessage(http.StatusOK)
+		return http.StatusOK, NewJSend(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
-	err = route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
-	})
-	Expect(err).Should(HaveOccurred())
-	Expect(err.Error()).Should(BeEquivalentTo(fmt.Sprintf("route %s already has a method %s", defaultPath, method)))
 }
 
 func TestNewRouteWithPATCH(t *testing.T) {
@@ -95,14 +81,9 @@ func TestNewRouteWithPATCH(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
 	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSendMessage(http.StatusOK)
+		return http.StatusOK, NewJSend(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
-	err = route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
-	})
-	Expect(err).Should(HaveOccurred())
-	Expect(err.Error()).Should(BeEquivalentTo(fmt.Sprintf("route %s already has a method %s", defaultPath, method)))
 }
 
 func TestNewRouteWithHEAD(t *testing.T) {
@@ -114,14 +95,9 @@ func TestNewRouteWithHEAD(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
 	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSendMessage(http.StatusOK)
+		return http.StatusOK, NewJSend(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
-	err = route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
-	})
-	Expect(err).Should(HaveOccurred())
-	Expect(err.Error()).Should(BeEquivalentTo(fmt.Sprintf("route %s already has a method %s", defaultPath, method)))
 }
 
 func TestNewRouteWithOPTIONS(t *testing.T) {
@@ -133,14 +109,9 @@ func TestNewRouteWithOPTIONS(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
 	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSendMessage(http.StatusOK)
+		return http.StatusOK, NewJSend(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
-	err = route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
-	})
-	Expect(err).Should(HaveOccurred())
-	Expect(err.Error()).Should(BeEquivalentTo(fmt.Sprintf("route %s already has a method %s", defaultPath, method)))
 }
 
 func TestRunServer(t *testing.T) {
@@ -150,11 +121,11 @@ func TestRunServer(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (statusCode int, response *JSendMessage) {
+	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *JSendMessage) {
 		if string(request.Body) == "success" {
-			return http.StatusOK, NewJSendMessage(http.StatusOK)
+			return http.StatusOK, NewJSend(http.StatusOK)
 		}
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
+		return http.StatusNotAcceptable, NewJSend(http.StatusNotAcceptable)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 	closeServer, chErr := server.RunServer()
@@ -178,6 +149,38 @@ func TestRunServer(t *testing.T) {
 	Eventually(chErr).ShouldNot(Receive())
 }
 
+func TestResponseWithStruct(t *testing.T) {
+	RegisterTestingT(t)
+	server := NewHttpServer(port)
+	Expect(server.engine).ShouldNot(BeNil())
+	Expect(server.server).ShouldNot(BeNil())
+	route := server.NewRoute(nil, defaultPath)
+	Expect(route.route).ShouldNot(BeNil())
+	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *JSendMessage) {
+		type TestResponse struct {
+			Test  string `json:"test"`
+			Test2 string `json:"test2"`
+		}
+		response := NewJSend(http.StatusOK)
+		response.Data = TestResponse{
+			Test:  "field 1",
+			Test2: "field2",
+		}
+		return http.StatusOK, response
+	})
+	Expect(err).ShouldNot(HaveOccurred())
+	closeServer, chErr := server.RunServer()
+	defer closeServer()
+	time.Sleep(5 * time.Millisecond)
+	resp, err := http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.Status).Should(BeEquivalentTo(strconv.Itoa(http.StatusOK) + " OK"))
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(body).Should(MatchJSON([]byte(`{"status":"success","data":{"test":"field 1","test2":"field2"}}`)))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
 func TestCloseServerFunc(t *testing.T) {
 	RegisterTestingT(t)
 	server := NewHttpServer(port)
@@ -187,9 +190,9 @@ func TestCloseServerFunc(t *testing.T) {
 	Expect(route.route).ShouldNot(BeNil())
 	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (statusCode int, response *JSendMessage) {
 		if string(request.Body) == "success" {
-			return http.StatusOK, NewJSendMessage(http.StatusOK)
+			return http.StatusOK, NewJSend(http.StatusOK)
 		}
-		return http.StatusNotAcceptable, NewJSendMessage(http.StatusNotAcceptable)
+		return http.StatusNotAcceptable, NewJSend(http.StatusNotAcceptable)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 	closeServer, chErr := server.RunServer()

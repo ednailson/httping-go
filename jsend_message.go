@@ -2,7 +2,7 @@ package httping
 
 type JSendMessage struct {
 	Status  JSendStatus `json:"status"`
-	Data    string      `json:"data,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 	Message string      `json:"message,omitempty"`
 }
 
@@ -14,7 +14,7 @@ const (
 	StatusFail    JSendStatus = "fail"
 )
 
-func NewJSendMessage(statusCode int) *JSendMessage {
+func NewJSend(statusCode int) *JSendMessage {
 	switch {
 	case statusCode >= 500:
 		return &JSendMessage{Status: StatusError}
@@ -23,4 +23,14 @@ func NewJSendMessage(statusCode int) *JSendMessage {
 	default:
 		return &JSendMessage{Status: StatusSuccess}
 	}
+}
+
+func (j *JSendMessage) AddData(data interface{}) *JSendMessage {
+	j.Data = data
+	return j
+}
+
+func (j *JSendMessage) AddMessage(message string) *JSendMessage {
+	j.Message = message
+	return j
 }
