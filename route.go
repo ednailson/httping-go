@@ -1,29 +1,18 @@
 package httping
 
 import (
-	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
 )
 
 type HandlerFunc func(request HttpRequest) (statusCode int, response *JSendMessage)
-type Methods map[string]bool
 
 type Route struct {
-	route   *gin.RouterGroup
-	methods Methods
+	route *gin.RouterGroup
 }
 
 func (gp *Route) AddMethod(method string, handler HandlerFunc) error {
-	if gp.methods == nil {
-		gp.methods = make(map[string]bool)
-	}
-	value, ok := gp.methods[method]
-	if ok == true && value == true {
-		return errors.New(fmt.Sprintf("route %s already has a method %s", gp.route.BasePath(), method))
-	}
 	switch method {
 	case http.MethodGet:
 		gp.route.GET("", getHandleFunc(handler))
@@ -42,7 +31,6 @@ func (gp *Route) AddMethod(method string, handler HandlerFunc) error {
 	default:
 		return &ErrorUnknownMethod{}
 	}
-	gp.methods[method] = true
 	return nil
 }
 
