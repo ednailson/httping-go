@@ -46,7 +46,7 @@ So now there are two new **routes**: `http://localhost:3000/example/create` and 
 
 ```go
 err := routeExample.AddMethod("POST", func(request HttpRequest) (int, *ResponseMessage) {
-    if len(request.body) === 0 {
+    if len(request.body) == 0 {
         return 404, httping.NewResponse(404)
     }
     return 200, httping.NewResponse(200)
@@ -61,7 +61,7 @@ And it is possible to add different **methods** on the same **route**.
 
 ```go
 err := routeExample.AddMethod("GET", func(request HttpRequest) (int, *ResponseMessage) {
-    if len(request.body) === 0 {
+    if len(request.body) == 0 {
         return 404, httping.NewResponse(404)
     }
     return 200, httping.NewResponse(200)
