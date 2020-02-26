@@ -129,7 +129,7 @@ func TestRunServer(t *testing.T) {
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 	closeServer, chErr := server.RunServer()
-	defer closeServer()
+	defer closingServer(closeServer)
 	resp, err := http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
 	Expect(err).ShouldNot(HaveOccurred())
 	Expect(resp.Status).Should(BeEquivalentTo(strconv.Itoa(http.StatusOK) + " OK"))
@@ -138,7 +138,7 @@ func TestRunServer(t *testing.T) {
 	Expect(resp.Status).Should(BeEquivalentTo(strconv.Itoa(http.StatusNotAcceptable) + " Not Acceptable"))
 	Eventually(chErr).ShouldNot(Receive())
 	closeServer2, chErr2 := server.RunServer()
-	defer closeServer2()
+	defer closingServer(closeServer2)
 	resp, err = http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
 	Expect(err).ShouldNot(HaveOccurred())
 	Expect(resp.Status).Should(BeEquivalentTo(strconv.Itoa(http.StatusOK) + " OK"))
@@ -168,7 +168,7 @@ func TestResponseWithStruct(t *testing.T) {
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 	closeServer, chErr := server.RunServer()
-	defer closeServer()
+	defer closingServer(closeServer)
 	time.Sleep(5 * time.Millisecond)
 	resp, err := http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
 	Expect(err).ShouldNot(HaveOccurred())
@@ -198,7 +198,7 @@ func TestRequestAndResponseWithHeaders(t *testing.T) {
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 	closeServer, chErr := server.RunServer()
-	defer closeServer()
+	defer closingServer(closeServer)
 	time.Sleep(5 * time.Millisecond)
 	req, err := http.NewRequest(http.MethodPost, baseUrl+defaultPath, bytes.NewReader([]byte("success")))
 	Expect(err).ShouldNot(HaveOccurred())
@@ -242,4 +242,9 @@ func TestCloseServerFunc(t *testing.T) {
 	err = closeServer()
 	_, err = http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("not success")))
 	Expect(err).Should(HaveOccurred())
+}
+
+func closingServer(closeServerFn ServerCloseFunc) {
+	err := closeServerFn()
+	Expect(err).ShouldNot(HaveOccurred())
 }
