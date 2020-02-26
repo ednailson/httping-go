@@ -12,3 +12,8 @@
 * Server does not accept two methods at the same route. `panic.Err()` is generated
 * `NewJSend` method renamed
 * `JSendMessage` methods to add data and message
+
+## 0.3.0
+
+* Headers has been added into the **request** and the **response**
+* Creating responses now is `NewResponse` instead of `NewJSend`
