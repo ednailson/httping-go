@@ -38,8 +38,8 @@ func TestNewRouteWithPOST(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSend(http.StatusOK)
+	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *ResponseMessage) {
+		return http.StatusOK, NewResponse(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 }
@@ -52,8 +52,8 @@ func TestNewRouteWithGET(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSend(http.StatusOK)
+	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *ResponseMessage) {
+		return http.StatusOK, NewResponse(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 }
@@ -66,8 +66,8 @@ func TestNewRouteWithPUT(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSend(http.StatusOK)
+	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *ResponseMessage) {
+		return http.StatusOK, NewResponse(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 }
@@ -80,8 +80,8 @@ func TestNewRouteWithPATCH(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSend(http.StatusOK)
+	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *ResponseMessage) {
+		return http.StatusOK, NewResponse(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 }
@@ -94,8 +94,8 @@ func TestNewRouteWithHEAD(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSend(http.StatusOK)
+	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *ResponseMessage) {
+		return http.StatusOK, NewResponse(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 }
@@ -108,8 +108,8 @@ func TestNewRouteWithOPTIONS(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *JSendMessage) {
-		return http.StatusOK, NewJSend(http.StatusOK)
+	err := route.AddMethod(method, func(request HttpRequest) (statusCode int, response *ResponseMessage) {
+		return http.StatusOK, NewResponse(http.StatusOK)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 }
@@ -121,11 +121,11 @@ func TestRunServer(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *JSendMessage) {
+	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *ResponseMessage) {
 		if string(request.Body) == "success" {
-			return http.StatusOK, NewJSend(http.StatusOK)
+			return http.StatusOK, NewResponse(http.StatusOK)
 		}
-		return http.StatusNotAcceptable, NewJSend(http.StatusNotAcceptable)
+		return http.StatusNotAcceptable, NewResponse(http.StatusNotAcceptable)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 	closeServer, chErr := server.RunServer()
@@ -156,12 +156,12 @@ func TestResponseWithStruct(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *JSendMessage) {
+	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *ResponseMessage) {
 		type TestResponse struct {
 			Test  string `json:"test"`
 			Test2 string `json:"test2"`
 		}
-		return http.StatusOK, NewJSend(http.StatusOK).AddData(TestResponse{
+		return http.StatusOK, NewResponse(http.StatusOK).AddData(TestResponse{
 			Test:  "field 1",
 			Test2: "field2",
 		})
@@ -186,8 +186,8 @@ func TestRequestAndResponseWithHeaders(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *JSendMessage) {
-		response := NewJSend(http.StatusOK)
+	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (int, *ResponseMessage) {
+		response := NewResponse(http.StatusOK)
 		Expect(request.Headers["Header-Test"][0]).Should(BeEquivalentTo("header test 1"))
 		Expect(request.Headers["Header-Test"][1]).Should(BeEquivalentTo("header test 2"))
 		Expect(request.Headers["Header-Test2"][0]).Should(BeEquivalentTo("header test 3"))
@@ -224,11 +224,11 @@ func TestCloseServerFunc(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (statusCode int, response *JSendMessage) {
+	err := route.AddMethod(http.MethodPost, func(request HttpRequest) (statusCode int, response *ResponseMessage) {
 		if string(request.Body) == "success" {
-			return http.StatusOK, NewJSend(http.StatusOK)
+			return http.StatusOK, NewResponse(http.StatusOK)
 		}
-		return http.StatusNotAcceptable, NewJSend(http.StatusNotAcceptable)
+		return http.StatusNotAcceptable, NewResponse(http.StatusNotAcceptable)
 	})
 	Expect(err).ShouldNot(HaveOccurred())
 	closeServer, chErr := server.RunServer()

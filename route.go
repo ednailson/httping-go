@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-type HandlerFunc func(request HttpRequest) (statusCode int, response *JSendMessage)
+type HandlerFunc func(request HttpRequest) (statusCode int, response *ResponseMessage)
 
 type Route struct {
 	route *gin.RouterGroup
