@@ -17,3 +17,7 @@
 
 * Headers has been added into the **request** and the **response**
 * Creating responses now is `NewResponse` instead of `NewJSend`
+
+### 0.3.1
+
+* Fix the error report on the channel received from `RunServer()`
