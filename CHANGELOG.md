@@ -21,3 +21,7 @@
 ### 0.3.1
 
 * Fix the error report on the channel received from `RunServer()`
+
+### 0.4.0
+
+* Only `NewResponse()` method is required on the response when is added a new method

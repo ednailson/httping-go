@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-type HandlerFunc func(request HttpRequest) (statusCode int, response *ResponseMessage)
+type HandlerFunc func(request HttpRequest) (response *ResponseMessage)
 
 type Route struct {
 	route *gin.RouterGroup
@@ -50,22 +50,18 @@ func getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 		for k, v := range c.Request.Header {
 			headers[k] = v
 		}
-		code, message := handle(HttpRequest{
+		message := handle(HttpRequest{
 			Body:    body,
 			Query:   query,
 			Params:  params,
 			Headers: headers,
 		})
-		if message == nil {
-			c.Writer.WriteHeader(code)
-			return
-		}
 		for k, v := range message.headers {
 			for _, h := range v {
 				c.Writer.Header().Add(k, h)
 			}
 		}
-		c.JSON(code, message)
+		c.JSON(message.statusCode, message)
 	}
 }
 
