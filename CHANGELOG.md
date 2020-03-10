@@ -25,3 +25,19 @@
 ### 0.4.0
 
 * Only `NewResponse()` method is required on the response when is added a new method
+
+### 0.5.0
+
+* `Code` in `ResponseMessage` for error responses
+* Helpers for responses. **Status**:
+    * OK
+    * Created
+    * Accepted
+    * NoContent
+    * BadRequest
+    * Unauthorized
+    * Forbidden
+    * NotFound
+    * MethodNotAllowed
+    * NotAcceptable
+    * InternalServerError
