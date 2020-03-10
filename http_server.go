@@ -34,7 +34,7 @@ func (server *HttpServer) RunServer() (ServerCloseFunc, chan error) {
 	chErr := make(chan error)
 	go func(server *http.Server) {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			<-chErr
+			chErr <- err
 		}
 	}(server.server)
 	return func() error {
