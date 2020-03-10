@@ -47,9 +47,9 @@ So now there are two new **routes**: `http://localhost:3000/example/create` and 
 ```go
 err := routeExample.AddMethod("POST", func(request HttpRequest) (int, *ResponseMessage) {
     if len(request.body) == 0 {
-        return 404, httping.NewResponse(404)
+        return httping.NewResponse(404)
     }
-    return 200, httping.NewResponse(200)
+    return httping.NewResponse(200)
 })
 ```
 
@@ -62,9 +62,9 @@ And it is possible to add different **methods** on the same **route**.
 ```go
 err := routeExample.AddMethod("GET", func(request HttpRequest) (int, *ResponseMessage) {
     if len(request.body) == 0 {
-        return 404, httping.NewResponse(404)
+        return httping.NewResponse(404)
     }
-    return 200, httping.NewResponse(200)
+    return httping.NewResponse(200)
 })
 ```
 
@@ -74,7 +74,7 @@ If you will not use the route two or more times you can directly create a route 
 
 ```go
 err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
-		return http.StatusOK, httping.NewResponse(http.StatusOK)
+		return httping.NewResponse(200)
 	})
 ```
 
@@ -94,7 +94,7 @@ This will build a Response message with the status correct according with the ht
 
 ```go
 err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
-		return http.StatusOK, httping.NewResponse(200).AddData("success")
+		return httping.NewResponse(200).AddData("success")
 	})
 ```
 
