@@ -16,6 +16,10 @@ func TestNewResponse(t *testing.T) {
 	Expect(resp.Message).To(BeEquivalentTo(""))
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusOK))
 	Expect(len(resp.headers)).To(BeEquivalentTo(0))
+	resp.AddMessage("test message")
+	Expect(resp.Message).To(BeEquivalentTo(""))
+	resp.AddCode("test code")
+	Expect(resp.Code).To(BeEquivalentTo(""))
 }
 
 func TestAddMessage(t *testing.T) {
@@ -52,6 +56,10 @@ func TestFailMessage(t *testing.T) {
 	Expect(resp.Message).To(BeEquivalentTo(""))
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusBadRequest))
 	Expect(len(resp.headers)).To(BeEquivalentTo(0))
+	resp.AddMessage("test message")
+	Expect(resp.Message).To(BeEquivalentTo(""))
+	resp.AddCode("test code")
+	Expect(resp.Code).To(BeEquivalentTo(""))
 }
 
 func TestAddData(t *testing.T) {
