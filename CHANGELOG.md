@@ -41,3 +41,7 @@
     * MethodNotAllowed
     * NotAcceptable
     * InternalServerError
+
+### 0.5.1
+
+* Code and message can only be added on the `StatusError` messages
