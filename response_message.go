@@ -34,11 +34,17 @@ func (r *ResponseMessage) AddData(data interface{}) *ResponseMessage {
 }
 
 func (r *ResponseMessage) AddMessage(message string) *ResponseMessage {
+	if r.Status != StatusError {
+		return r
+	}
 	r.Message = message
 	return r
 }
 
 func (r *ResponseMessage) AddCode(code string) *ResponseMessage {
+	if r.Status != StatusError {
+		return r
+	}
 	r.Code = code
 	return r
 }
