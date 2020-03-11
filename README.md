@@ -78,9 +78,9 @@ err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.Ht
 	})
 ```
 
-### Response helpers
+### Responding
 
-This lib also brings some helpers for the response for the `handleFunc()`
+Responses for the `handleFunc()`
 
 For creating a `ResponseMessage`
 
@@ -100,7 +100,20 @@ err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.Ht
 
 It respects the [jsend](https://github.com/omniti-labs/jsend)'s pattern. 
 
-On **responses** it also possible to add Headers and Message
+On **responses** it also possible to add Headers, Code and Message.
+
+There are a few helpers for the most commons http status codes.
+
+**Example**
+
+```go
+err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
+		return httping.OK("data example")
+	})
+```
+
+It will return a status code ok (200) with the data `data example`
+You can check all the helpers [here](CHANGELOG.md#050).
 
 # Developer
 

@@ -4,6 +4,7 @@ type ResponseMessage struct {
 	Status     ResponseStatus `json:"status"`
 	Data       interface{}    `json:"data,omitempty"`
 	Message    string         `json:"message,omitempty"`
+	Code       string         `json:"code,omitempty"`
 	headers    map[string][]string
 	statusCode int
 }
@@ -34,6 +35,11 @@ func (r *ResponseMessage) AddData(data interface{}) *ResponseMessage {
 
 func (r *ResponseMessage) AddMessage(message string) *ResponseMessage {
 	r.Message = message
+	return r
+}
+
+func (r *ResponseMessage) AddCode(code string) *ResponseMessage {
+	r.Code = code
 	return r
 }
 
