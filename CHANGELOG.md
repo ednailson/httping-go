@@ -45,3 +45,7 @@
 ### 0.5.1
 
 * Code and message can only be added on the `StatusError` messages
+
+### 0.6.0
+
+* `AddMethod` does not returns error. If the method is not known it will not be added any method

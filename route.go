@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type HandlerFunc func(request HttpRequest) (response *ResponseMessage)
@@ -12,7 +13,8 @@ type Route struct {
 	route *gin.RouterGroup
 }
 
-func (gp *Route) AddMethod(method string, handler HandlerFunc) error {
+func (gp *Route) AddMethod(method string, handler HandlerFunc) {
+	method = strings.ToUpper(method)
 	switch method {
 	case http.MethodGet:
 		gp.route.GET("", getHandleFunc(handler))
@@ -28,10 +30,7 @@ func (gp *Route) AddMethod(method string, handler HandlerFunc) error {
 		gp.route.HEAD("", getHandleFunc(handler))
 	case http.MethodOptions:
 		gp.route.OPTIONS("", getHandleFunc(handler))
-	default:
-		return &ErrorUnknownMethod{}
 	}
-	return nil
 }
 
 func getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
@@ -63,10 +62,4 @@ func getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 		}
 		c.JSON(message.statusCode, message)
 	}
-}
-
-type ErrorUnknownMethod struct{}
-
-func (e *ErrorUnknownMethod) Error() string {
-	return "unknown http method"
 }
