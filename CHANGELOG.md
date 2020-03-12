@@ -22,11 +22,11 @@
 
 * Fix the error report on the channel received from `RunServer()`
 
-### 0.4.0
+## 0.4.0
 
 * Only `NewResponse()` method is required on the response when is added a new method
 
-### 0.5.0
+## 0.5.0
 
 * `Code` in `ResponseMessage` for error responses
 * Helpers for responses. **Status**:
@@ -46,6 +46,6 @@
 
 * Code and message can only be added on the `StatusError` messages
 
-### 0.6.0
+## 0.6.0
 
 * `AddMethod` does not returns error. If the method is not known it will not be added any method
