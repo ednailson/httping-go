@@ -49,3 +49,8 @@
 ## 0.6.0
 
 * `AddMethod` does not returns error. If the method is not known it will not be added any method
+
+## 0.7.0
+
+* It is possible to add a middleware function to the **http server**
+* Responses **null** will return http status code of success (200)
