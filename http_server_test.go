@@ -234,6 +234,79 @@ func TestCloseServerFunc(t *testing.T) {
 	Expect(err).Should(HaveOccurred())
 }
 
+func TestServerWithMiddleware(t *testing.T) {
+	RegisterTestingT(t)
+	const token = "b4357690-1a01-4fc5-8243-2c2f32b9fc26"
+	server := NewHttpServer(port).SetMiddleware(func(request HttpRequest) (*ResponseMessage, bool) {
+		if request.Headers["Authorization"][0] != token {
+			return Unauthorized("not authorized"), false
+		}
+		return nil, true
+	})
+	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+		return OK("middleware ok")
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	time.Sleep(5 * time.Millisecond)
+	req, err := http.NewRequest(http.MethodPost, baseUrl+defaultPath, nil)
+	Expect(err).ShouldNot(HaveOccurred())
+	req.Header.Add("Authorization", token)
+	client := http.DefaultClient
+	resp, err := client.Do(req)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusOK))
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(body).Should(MatchJSON([]byte(`{"status":"success","data":"middleware ok"}`)))
+	req.Header.Del("Authorization")
+	req.Header.Add("Authorization", "wrong token")
+	resp, err = client.Do(req)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusUnauthorized))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
+func TestNullResponsesOnMiddleware(t *testing.T) {
+	RegisterTestingT(t)
+	RegisterTestingT(t)
+	server := NewHttpServer(port).SetMiddleware(func(request HttpRequest) (*ResponseMessage, bool) {
+		return nil, false
+	})
+	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+		return OK("success")
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	time.Sleep(5 * time.Millisecond)
+	resp, err := http.Post(baseUrl+defaultPath, "application/json", nil)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusOK))
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(string(body)).Should(BeEquivalentTo("null\n"))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
+func TestNullResponsesOnHandler(t *testing.T) {
+	RegisterTestingT(t)
+	RegisterTestingT(t)
+	server := NewHttpServer(port)
+	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+		return nil
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	time.Sleep(5 * time.Millisecond)
+	resp, err := http.Post(baseUrl+defaultPath, "application/json", nil)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusOK))
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(string(body)).Should(BeEquivalentTo("null\n"))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
 func closingServer(closeServerFn ServerCloseFunc) {
 	err := closeServerFn()
 	Expect(err).ShouldNot(HaveOccurred())
