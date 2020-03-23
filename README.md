@@ -115,6 +115,25 @@ err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.Ht
 It will return a status code ok (200) with the data `data example`
 You can check all the helpers [here](CHANGELOG.md#050).
 
+### Middleware on the server
+
+From 0.7.0 version is possible to set a middleware handler function to the server
+
+```go
+server := httping.NewHttpServer(3000).SetMiddleware(
+    func(request HttpRequest) (*ResponseMessage, bool) {
+        if request.Headers["Authorization"][0] != "token"{
+            return Unauthorized("not authorized"), false
+        }
+        return nil, true
+    }
+)
+```
+
+If you return `false`. The server will **not** let the request proceed and it will return the response returned.
+
+If you return `true`, the server will let the request proceed to the route's `handleFunc`
+
 # Developer
 
 [Júnior Vilas Boas](http://ednailson.github.io)

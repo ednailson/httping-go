@@ -17,8 +17,9 @@ func NewHttpServer(port int) *HttpServer {
 }
 
 type HttpServer struct {
-	server *http.Server
-	engine *gin.Engine
+	server     *http.Server
+	engine     *gin.Engine
+	middleware MiddlewareFunc
 }
 
 func (server *HttpServer) NewRoute(baseRoute *Route, path string) *Route {
@@ -27,7 +28,7 @@ func (server *HttpServer) NewRoute(baseRoute *Route, path string) *Route {
 		return &Route{route: g}
 	}
 	g := server.engine.Group(path)
-	return &Route{route: g}
+	return &Route{route: g, middleware: server.middleware}
 }
 
 func (server *HttpServer) RunServer() (ServerCloseFunc, chan error) {
@@ -40,6 +41,11 @@ func (server *HttpServer) RunServer() (ServerCloseFunc, chan error) {
 	return func() error {
 		return server.server.Close()
 	}, chErr
+}
+
+func (server *HttpServer) SetMiddleware(middleware MiddlewareFunc) *HttpServer {
+	server.middleware = middleware
+	return server
 }
 
 type ServerCloseFunc func() error
