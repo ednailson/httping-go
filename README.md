@@ -73,7 +73,7 @@ Now the route `http://localhost:3000/example` has the **methods** `GET` and `POS
 If you will not use the route two or more times you can directly create a route and add a method 
 
 ```go
-err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
+server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
 		return httping.NewResponse(200)
 	})
 ```
@@ -93,7 +93,7 @@ This will build a Response message with the status correct according with the ht
 **Example**
 
 ```go
-err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
+server.NewRoute(nil, "/create").POST(func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
 		return httping.NewResponse(200).AddData("success")
 	})
 ```
@@ -107,7 +107,7 @@ There are a few helpers for the most commons http status codes.
 **Example**
 
 ```go
-err := server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
+server.NewRoute(nil, "/create").POST(func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
 		return httping.OK("data example")
 	})
 ```
