@@ -35,6 +35,34 @@ func (r *Route) AddMethod(method string, handler HandlerFunc) {
 	}
 }
 
+func (r *Route) POST(handler HandlerFunc) {
+	r.AddMethod(http.MethodPost, handler)
+}
+
+func (r *Route) GET(handler HandlerFunc) {
+	r.AddMethod(http.MethodGet, handler)
+}
+
+func (r *Route) PUT(handler HandlerFunc) {
+	r.AddMethod(http.MethodPut, handler)
+}
+
+func (r *Route) DELETE(handler HandlerFunc) {
+	r.AddMethod(http.MethodDelete, handler)
+}
+
+func (r *Route) PATCH(handler HandlerFunc) {
+	r.AddMethod(http.MethodPatch, handler)
+}
+
+func (r *Route) HEAD(handler HandlerFunc) {
+	r.AddMethod(http.MethodHead, handler)
+}
+
+func (r *Route) OPTIONS(handler HandlerFunc) {
+	r.AddMethod(http.MethodOptions, handler)
+}
+
 func (r *Route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		body, err := ioutil.ReadAll(c.Request.Body)

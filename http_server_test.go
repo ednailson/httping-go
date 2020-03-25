@@ -38,9 +38,13 @@ func TestNewRouteWithPOST(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	route.AddMethod(method, func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
-	})
+	}
+	route.AddMethod(method, handleFunc)
+	Expect(func() {
+		route.POST(handleFunc)
+	}).To(Panic())
 }
 
 func TestNewRouteWithGET(t *testing.T) {
@@ -51,9 +55,13 @@ func TestNewRouteWithGET(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	route.AddMethod(method, func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
-	})
+	}
+	route.AddMethod(method, handleFunc)
+	Expect(func() {
+		route.GET(handleFunc)
+	}).To(Panic())
 }
 
 func TestNewRouteWithPUT(t *testing.T) {
@@ -64,9 +72,13 @@ func TestNewRouteWithPUT(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	route.AddMethod(method, func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
-	})
+	}
+	route.AddMethod(method, handleFunc)
+	Expect(func() {
+		route.PUT(handleFunc)
+	}).To(Panic())
 }
 
 func TestNewRouteWithPATCH(t *testing.T) {
@@ -77,9 +89,13 @@ func TestNewRouteWithPATCH(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	route.AddMethod(method, func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
-	})
+	}
+	route.AddMethod(method, handleFunc)
+	Expect(func() {
+		route.PATCH(handleFunc)
+	}).To(Panic())
 }
 
 func TestNewRouteWithHEAD(t *testing.T) {
@@ -90,9 +106,13 @@ func TestNewRouteWithHEAD(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	route.AddMethod(method, func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
-	})
+	}
+	route.AddMethod(method, handleFunc)
+	Expect(func() {
+		route.HEAD(handleFunc)
+	}).To(Panic())
 }
 
 func TestNewRouteWithOPTIONS(t *testing.T) {
@@ -103,9 +123,13 @@ func TestNewRouteWithOPTIONS(t *testing.T) {
 	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route.route).ShouldNot(BeNil())
-	route.AddMethod(method, func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
-	})
+	}
+	route.AddMethod(method, handleFunc)
+	Expect(func() {
+		route.OPTIONS(handleFunc)
+	}).To(Panic())
 }
 
 func TestRunServer(t *testing.T) {
