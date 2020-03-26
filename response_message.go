@@ -1,5 +1,7 @@
 package httping
 
+import "net/http"
+
 type ResponseMessage struct {
 	Status     ResponseStatus `json:"status"`
 	Data       interface{}    `json:"data,omitempty"`
@@ -7,6 +9,7 @@ type ResponseMessage struct {
 	Code       string         `json:"code,omitempty"`
 	headers    map[string][]string
 	statusCode int
+	cookies    []*http.Cookie
 }
 
 type ResponseStatus string
@@ -51,5 +54,15 @@ func (r *ResponseMessage) AddCode(code string) *ResponseMessage {
 
 func (r *ResponseMessage) AddHeader(key, value string) *ResponseMessage {
 	r.headers[key] = append(r.headers[key], value)
+	return r
+}
+
+func (r *ResponseMessage) AddCookie(cookie *http.Cookie) *ResponseMessage {
+	r.cookies = append(r.cookies, cookie)
+	return r
+}
+
+func (r *ResponseMessage) SetCookies(cookies []*http.Cookie) *ResponseMessage {
+	r.cookies = cookies
 	return r
 }

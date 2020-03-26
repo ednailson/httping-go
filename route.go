@@ -85,6 +85,7 @@ func (r *Route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 				Query:   query,
 				Params:  params,
 				Headers: headers,
+				Cookies: c.Request.Cookies(),
 			})
 			if !ok {
 				if message != nil {
@@ -100,12 +101,16 @@ func (r *Route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 			Query:   query,
 			Params:  params,
 			Headers: headers,
+			Cookies: c.Request.Cookies(),
 		})
 		if message != nil {
 			for k, v := range message.headers {
 				for _, h := range v {
 					c.Writer.Header().Add(k, h)
 				}
+			}
+			for _, v := range message.cookies {
+				c.SetCookie(v.Name, v.Value, v.MaxAge, v.Path, v.Domain, v.Secure, v.HttpOnly)
 			}
 			c.JSON(message.statusCode, message)
 			return
