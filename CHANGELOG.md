@@ -74,3 +74,7 @@
 
 * Get for `status`, `headers` and `cookies` on `ResponseMessage`.
 * Fixing response no content(_status 204_) to respond no body
+
+### 0.8.1
+
+* Go mod fixing
