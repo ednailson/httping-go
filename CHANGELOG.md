@@ -55,7 +55,7 @@
 * It is possible to add a middleware function to the **http server**
 * Responses **null** will return http status code of success (200)
 
-## 0.7.1
+### 0.7.1
 
 * Helpers for adding methods on routes
     * POST
@@ -65,3 +65,7 @@
     * PATCH
     * HEAD
     * OPTIONS
+
+### 0.7.2
+
+* Cookies is manageable on the **request** and **response** now on.

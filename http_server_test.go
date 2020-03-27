@@ -331,6 +331,36 @@ func TestNullResponsesOnHandler(t *testing.T) {
 	Eventually(chErr).ShouldNot(Receive())
 }
 
+func TestRequestAndResponseWithCookies(t *testing.T) {
+	RegisterTestingT(t)
+	server := NewHttpServer(port)
+	cookie := &http.Cookie{
+		Name:  "test-cookie",
+		Value: "value-cookie",
+	}
+	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) *ResponseMessage {
+		Expect(request.Cookies[0].Name).To(BeEquivalentTo(cookie.Name))
+		Expect(request.Cookies[0].Value).To(BeEquivalentTo(cookie.Value))
+		return OK("test").AddCookie(cookie)
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	time.Sleep(5 * time.Millisecond)
+	req, err := http.NewRequest(http.MethodPost, baseUrl+defaultPath, nil)
+	Expect(err).ShouldNot(HaveOccurred())
+	req.AddCookie(cookie)
+	client := http.DefaultClient
+	resp, err := client.Do(req)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusOK))
+	Expect(resp.Cookies()[0].Name).To(BeEquivalentTo(cookie.Name))
+	Expect(resp.Cookies()[0].Value).To(BeEquivalentTo(cookie.Value))
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(body).Should(MatchJSON([]byte(`{"status":"success","data":"test"}`)))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
 func closingServer(closeServerFn ServerCloseFunc) {
 	err := closeServerFn()
 	Expect(err).ShouldNot(HaveOccurred())
