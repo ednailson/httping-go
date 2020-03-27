@@ -69,7 +69,7 @@ func (r *ResponseMessage) SetCookies(cookies []*http.Cookie) *ResponseMessage {
 	return r
 }
 
-func (r *ResponseMessage) GetStatus() int {
+func (r *ResponseMessage) GetStatusCode() int {
 	return r.statusCode
 }
 
