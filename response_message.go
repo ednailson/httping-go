@@ -3,7 +3,7 @@ package httping
 import "net/http"
 
 type ResponseMessage struct {
-	Status     ResponseStatus `json:"status"`
+	Status     ResponseStatus `json:"status,omitempty"`
 	Data       interface{}    `json:"data,omitempty"`
 	Message    string         `json:"message,omitempty"`
 	Code       string         `json:"code,omitempty"`
@@ -22,10 +22,12 @@ const (
 
 func NewResponse(statusCode int) *ResponseMessage {
 	switch {
-	case statusCode >= 500:
+	case statusCode >= http.StatusInternalServerError:
 		return &ResponseMessage{Status: StatusError, headers: make(map[string][]string), statusCode: statusCode}
-	case statusCode >= 400 && statusCode < 500:
+	case statusCode >= http.StatusBadRequest && statusCode < http.StatusInternalServerError:
 		return &ResponseMessage{Status: StatusFail, headers: make(map[string][]string), statusCode: statusCode}
+	case statusCode == http.StatusNoContent:
+		return &ResponseMessage{statusCode: statusCode}
 	default:
 		return &ResponseMessage{Status: StatusSuccess, headers: make(map[string][]string), statusCode: statusCode}
 	}
@@ -65,4 +67,16 @@ func (r *ResponseMessage) AddCookie(cookie *http.Cookie) *ResponseMessage {
 func (r *ResponseMessage) SetCookies(cookies []*http.Cookie) *ResponseMessage {
 	r.cookies = cookies
 	return r
+}
+
+func (r *ResponseMessage) GetStatus() int {
+	return r.statusCode
+}
+
+func (r *ResponseMessage) GetCookies() []*http.Cookie {
+	return r.cookies
+}
+
+func (r *ResponseMessage) GetHeaders() map[string][]string {
+	return r.headers
 }

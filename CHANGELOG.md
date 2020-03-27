@@ -69,3 +69,8 @@
 ### 0.7.2
 
 * Cookies is manageable on the **request** and **response** now on.
+
+## 0.8.0
+
+* Get for `status`, `headers` and `cookies` on `ResponseMessage`.
+* Fixing response no content(_status 204_) to respond no body

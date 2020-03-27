@@ -28,7 +28,7 @@ func TestNoContent(t *testing.T) {
 	RegisterTestingT(t)
 	resp := NoContent()
 	Expect(resp).ToNot(BeNil())
-	Expect(resp.Status).To(BeEquivalentTo(StatusSuccess))
+	Expect(resp.Status).To(BeEquivalentTo(""))
 	Expect(resp.Code).To(BeEquivalentTo(""))
 	Expect(resp.Data).To(BeNil())
 	Expect(resp.Message).To(BeEquivalentTo(""))
