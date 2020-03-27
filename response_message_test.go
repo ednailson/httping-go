@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/gomega"
 	"net/http"
 	"testing"
+	"time"
 )
 
 func TestNewResponse(t *testing.T) {
@@ -15,6 +16,7 @@ func TestNewResponse(t *testing.T) {
 	Expect(resp.Data).To(BeNil())
 	Expect(resp.Message).To(BeEquivalentTo(""))
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusOK))
+	Expect(resp.GetStatus()).To(BeEquivalentTo(http.StatusOK))
 	Expect(len(resp.headers)).To(BeEquivalentTo(0))
 	resp.AddMessage("test message")
 	Expect(resp.Message).To(BeEquivalentTo(""))
@@ -43,6 +45,7 @@ func TestAddCode(t *testing.T) {
 	Expect(resp.Data).To(BeNil())
 	Expect(resp.Message).To(BeEquivalentTo(""))
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusInternalServerError))
+	Expect(resp.GetStatus()).To(BeEquivalentTo(http.StatusInternalServerError))
 	Expect(len(resp.headers)).To(BeEquivalentTo(0))
 }
 
@@ -85,4 +88,55 @@ func TestAddHeader(t *testing.T) {
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusOK))
 	Expect(len(resp.headers)).To(BeEquivalentTo(1))
 	Expect(resp.headers["test key"][0]).To(BeEquivalentTo("test value"))
+	headers := resp.GetHeaders()
+	Expect(len(headers)).To(BeEquivalentTo(1))
+	Expect(headers["test key"][0]).To(BeEquivalentTo("test value"))
+}
+
+func TestAddCookie(t *testing.T) {
+	RegisterTestingT(t)
+	cookie := &http.Cookie{
+		Name:    "cookie",
+		Value:   "value",
+		Path:    "/path",
+		Domain:  "domain",
+		Expires: time.Now().UTC().Add(time.Minute),
+		MaxAge:  600,
+	}
+	resp := OK(nil).AddCookie(cookie)
+	Expect(resp).ToNot(BeNil())
+	Expect(resp.Status).To(BeEquivalentTo(StatusSuccess))
+	Expect(resp.Code).To(BeEquivalentTo(""))
+	Expect(resp.Data).To(BeNil())
+	Expect(resp.Message).To(BeEquivalentTo(""))
+	Expect(resp.GetStatus()).To(BeEquivalentTo(http.StatusOK))
+	Expect(len(resp.GetHeaders())).To(BeEquivalentTo(0))
+	Expect(len(resp.GetCookies())).To(BeEquivalentTo(1))
+	Expect(resp.GetCookies()[0]).To(BeEquivalentTo(cookie))
+}
+
+func TestSetCookies(t *testing.T) {
+	RegisterTestingT(t)
+	var cookies []*http.Cookie
+	cookie := &http.Cookie{
+		Name:    "cookie",
+		Value:   "value",
+		Path:    "/path",
+		Domain:  "domain",
+		Expires: time.Now().UTC().Add(time.Minute),
+		MaxAge:  600,
+	}
+	cookies = append(cookies, cookie)
+	cookies = append(cookies, cookie)
+	resp := OK(nil).SetCookies(cookies)
+	Expect(resp).ToNot(BeNil())
+	Expect(resp.Status).To(BeEquivalentTo(StatusSuccess))
+	Expect(resp.Code).To(BeEquivalentTo(""))
+	Expect(resp.Data).To(BeNil())
+	Expect(resp.Message).To(BeEquivalentTo(""))
+	Expect(resp.GetStatus()).To(BeEquivalentTo(http.StatusOK))
+	Expect(len(resp.GetHeaders())).To(BeEquivalentTo(0))
+	Expect(len(resp.GetCookies())).To(BeEquivalentTo(2))
+	Expect(resp.GetCookies()[0]).To(BeEquivalentTo(cookie))
+	Expect(resp.GetCookies()[1]).To(BeEquivalentTo(cookie))
 }

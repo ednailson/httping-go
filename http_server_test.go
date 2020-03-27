@@ -361,6 +361,23 @@ func TestRequestAndResponseWithCookies(t *testing.T) {
 	Eventually(chErr).ShouldNot(Receive())
 }
 
+func TestNoContentResponse(t *testing.T) {
+	RegisterTestingT(t)
+	server := NewHttpServer(port)
+	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) *ResponseMessage {
+		return NoContent()
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	resp, err := http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusNoContent))
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(len(body)).Should(BeEquivalentTo(0))
+	Expect(chErr).ToNot(Receive())
+}
+
 func closingServer(closeServerFn ServerCloseFunc) {
 	err := closeServerFn()
 	Expect(err).ShouldNot(HaveOccurred())
