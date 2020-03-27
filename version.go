@@ -4,6 +4,6 @@ const ApplicationName = "httping-go"
 
 var GitCommit string
 
-const Version = "0.8.0"
+const Version = "0.8.1"
 
 var VersionPrerelease = ""
