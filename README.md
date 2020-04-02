@@ -117,22 +117,24 @@ You can check all the helpers [here](CHANGELOG.md#050).
 
 ### Middleware on the server
 
-From 0.7.0 version is possible to set a middleware handler function to the server
+It is possible to set a middleware handler function to the server
 
 ```go
 server := httping.NewHttpServer(3000).SetMiddleware(
-    func(request HttpRequest) (*ResponseMessage, bool) {
+    func(request HttpRequest) (*ResponseMessage) {
         if request.Headers["Authorization"][0] != "token"{
-            return Unauthorized("not authorized"), false
+            return Unauthorized("not authorized")
         }
-        return nil, true
+        return nil
     }
 )
 ```
 
-If you return `false`. The server will **not** let the request proceed and it will return the response returned.
+If you return `ResponseMessage`: The server will **not** let the request proceed and it will return the response returned.
 
-If you return `true`, the server will let the request proceed to the route's `handleFunc`
+If you return `nil`, the server will let the request proceed to the route's `handleFunc`
+
+Middleware can also be applied only on a route. If the server has a middleware, the function will be replaced by the route's middleware function.
 
 # Developer
 
