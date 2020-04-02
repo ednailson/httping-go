@@ -9,4 +9,6 @@ type IRoute interface {
 	PATCH(handler HandlerFunc)
 	HEAD(handler HandlerFunc)
 	OPTIONS(handler HandlerFunc)
+	SetMiddleware(middleware HandlerFunc) IRoute
+	getRoute() *route
 }

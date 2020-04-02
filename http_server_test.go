@@ -16,28 +16,23 @@ const defaultPath = "/test"
 
 func TestNewServer(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
+	server := NewHttpServer("", port)
+	Expect(server).ShouldNot(BeNil())
 }
 
 func TestNewRoute(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
+	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 }
 
 func TestNewRouteWithPOST(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	const method = http.MethodPost
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
 	}
@@ -49,12 +44,10 @@ func TestNewRouteWithPOST(t *testing.T) {
 
 func TestNewRouteWithGET(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	const method = http.MethodGet
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
 	}
@@ -66,12 +59,10 @@ func TestNewRouteWithGET(t *testing.T) {
 
 func TestNewRouteWithPUT(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	const method = http.MethodPut
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
 	}
@@ -83,12 +74,10 @@ func TestNewRouteWithPUT(t *testing.T) {
 
 func TestNewRouteWithPATCH(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	const method = http.MethodPatch
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
 	}
@@ -100,12 +89,10 @@ func TestNewRouteWithPATCH(t *testing.T) {
 
 func TestNewRouteWithHEAD(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	const method = http.MethodHead
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
 	}
@@ -117,12 +104,10 @@ func TestNewRouteWithHEAD(t *testing.T) {
 
 func TestNewRouteWithOPTIONS(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	const method = http.MethodOptions
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) *ResponseMessage {
 		return NewResponse(http.StatusOK)
 	}
@@ -134,11 +119,9 @@ func TestNewRouteWithOPTIONS(t *testing.T) {
 
 func TestRunServer(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
+	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		if string(request.Body) == "success" {
 			return NewResponse(http.StatusOK)
@@ -168,11 +151,9 @@ func TestRunServer(t *testing.T) {
 
 func TestResponseWithStruct(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
+	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		type TestResponse struct {
 			Test  string `json:"test"`
@@ -197,11 +178,9 @@ func TestResponseWithStruct(t *testing.T) {
 
 func TestRequestAndResponseWithHeaders(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
+	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		response := NewResponse(http.StatusOK)
 		Expect(request.Headers["Header-Test"][0]).Should(BeEquivalentTo("header test 1"))
@@ -234,11 +213,9 @@ func TestRequestAndResponseWithHeaders(t *testing.T) {
 
 func TestCloseServerFunc(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
-	Expect(server.engine).ShouldNot(BeNil())
-	Expect(server.server).ShouldNot(BeNil())
+	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
-	Expect(route.route).ShouldNot(BeNil())
+	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		if string(request.Body) == "success" {
 			return NewResponse(http.StatusOK)
@@ -261,11 +238,11 @@ func TestCloseServerFunc(t *testing.T) {
 func TestServerWithMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	const token = "b4357690-1a01-4fc5-8243-2c2f32b9fc26"
-	server := NewHttpServer(port).SetMiddleware(func(request HttpRequest) (*ResponseMessage, bool) {
+	server := NewHttpServer("", port).SetMiddleware(func(request HttpRequest) *ResponseMessage {
 		if request.Headers["Authorization"][0] != token {
-			return Unauthorized("not authorized"), false
+			return Unauthorized("not authorized")
 		}
-		return nil, true
+		return nil
 	})
 	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		return OK("middleware ok")
@@ -294,8 +271,8 @@ func TestServerWithMiddleware(t *testing.T) {
 func TestNullResponsesOnMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	RegisterTestingT(t)
-	server := NewHttpServer(port).SetMiddleware(func(request HttpRequest) (*ResponseMessage, bool) {
-		return nil, false
+	server := NewHttpServer("", port).SetMiddleware(func(request HttpRequest) *ResponseMessage {
+		return NoContent()
 	})
 	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		return OK("success")
@@ -305,17 +282,17 @@ func TestNullResponsesOnMiddleware(t *testing.T) {
 	time.Sleep(5 * time.Millisecond)
 	resp, err := http.Post(baseUrl+defaultPath, "application/json", nil)
 	Expect(err).ShouldNot(HaveOccurred())
-	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusOK))
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusNoContent))
 	body, err := ioutil.ReadAll(resp.Body)
 	Expect(err).ShouldNot(HaveOccurred())
-	Expect(string(body)).Should(BeEquivalentTo("null\n"))
+	Expect(string(body)).Should(BeEquivalentTo(""))
 	Eventually(chErr).ShouldNot(Receive())
 }
 
 func TestNullResponsesOnHandler(t *testing.T) {
 	RegisterTestingT(t)
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		return nil
 	})
@@ -333,7 +310,7 @@ func TestNullResponsesOnHandler(t *testing.T) {
 
 func TestRequestAndResponseWithCookies(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	cookie := &http.Cookie{
 		Name:  "test-cookie",
 		Value: "value-cookie",
@@ -363,7 +340,7 @@ func TestRequestAndResponseWithCookies(t *testing.T) {
 
 func TestNoContentResponse(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer(port)
+	server := NewHttpServer("", port)
 	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) *ResponseMessage {
 		return NoContent()
 	})
@@ -376,6 +353,49 @@ func TestNoContentResponse(t *testing.T) {
 	Expect(err).ShouldNot(HaveOccurred())
 	Expect(len(body)).Should(BeEquivalentTo(0))
 	Expect(chErr).ToNot(Receive())
+}
+
+func TestRouteWithMiddleware(t *testing.T) {
+	RegisterTestingT(t)
+	server := NewHttpServer("", port).SetMiddleware(func(request HttpRequest) *ResponseMessage {
+		return Unauthorized("server middleware")
+	})
+	defaultRoute := server.NewRoute(nil, defaultPath).
+		SetMiddleware(func(request HttpRequest) *ResponseMessage {
+			return InternalServerError("middleware route")
+		})
+	defaultRoute.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+		return OK("middleware ok")
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	time.Sleep(5 * time.Millisecond)
+	resp, err := http.Post(baseUrl+defaultPath, "application/json", nil)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusInternalServerError))
+	body, err := ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(body).Should(MatchJSON([]byte(`{"status":"error","message":"middleware route"}`)))
+	Eventually(chErr).ShouldNot(Receive())
+	const extendedPath = "/extended"
+	server.NewRoute(defaultRoute, extendedPath).POST(func(request HttpRequest) *ResponseMessage {
+		return OK("route extended response")
+	})
+	resp, err = http.Post(baseUrl+defaultPath+extendedPath, "application/json", nil)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusInternalServerError))
+	body, err = ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(body).Should(MatchJSON([]byte(`{"status":"error","message":"middleware route"}`)))
+	server.NewRoute(nil, extendedPath).POST(func(request HttpRequest) *ResponseMessage {
+		return OK("extended path without test")
+	})
+	resp, err = http.Post(baseUrl+extendedPath, "application/json", nil)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusUnauthorized))
+	body, err = ioutil.ReadAll(resp.Body)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(body).Should(MatchJSON([]byte(`{"status":"fail","data":"server middleware"}`)))
 }
 
 func closingServer(closeServerFn ServerCloseFunc) {
