@@ -78,3 +78,11 @@
 ### 0.8.1
 
 * Go mod fixing
+
+## 0.9.0
+
+* Middleware functions only returns `ResponseMessage`. If it is the `MiddlewareFunc` returns `null` the middleware will
+continue the request for the `HandleFunc`
+* `NewServer` requires a host. It can run local if it receives `""` as host parameter.
+* Middleware function can be set on IRoute. It will be replace the server middleware function only on that route.
+* `NewServer` and `NewRoute` return only interfaces now on.
