@@ -8,14 +8,13 @@ import (
 )
 
 type HandlerFunc func(request HttpRequest) (response *ResponseMessage)
-type MiddlewareFunc func(request HttpRequest) (response *ResponseMessage, success bool)
 
-type Route struct {
+type route struct {
 	route      *gin.RouterGroup
-	middleware MiddlewareFunc
+	middleware HandlerFunc
 }
 
-func (r *Route) AddMethod(method string, handler HandlerFunc) {
+func (r *route) AddMethod(method string, handler HandlerFunc) {
 	method = strings.ToUpper(method)
 	switch method {
 	case http.MethodGet:
@@ -35,35 +34,44 @@ func (r *Route) AddMethod(method string, handler HandlerFunc) {
 	}
 }
 
-func (r *Route) POST(handler HandlerFunc) {
+func (r *route) POST(handler HandlerFunc) {
 	r.AddMethod(http.MethodPost, handler)
 }
 
-func (r *Route) GET(handler HandlerFunc) {
+func (r *route) GET(handler HandlerFunc) {
 	r.AddMethod(http.MethodGet, handler)
 }
 
-func (r *Route) PUT(handler HandlerFunc) {
+func (r *route) PUT(handler HandlerFunc) {
 	r.AddMethod(http.MethodPut, handler)
 }
 
-func (r *Route) DELETE(handler HandlerFunc) {
+func (r *route) DELETE(handler HandlerFunc) {
 	r.AddMethod(http.MethodDelete, handler)
 }
 
-func (r *Route) PATCH(handler HandlerFunc) {
+func (r *route) PATCH(handler HandlerFunc) {
 	r.AddMethod(http.MethodPatch, handler)
 }
 
-func (r *Route) HEAD(handler HandlerFunc) {
+func (r *route) HEAD(handler HandlerFunc) {
 	r.AddMethod(http.MethodHead, handler)
 }
 
-func (r *Route) OPTIONS(handler HandlerFunc) {
+func (r *route) OPTIONS(handler HandlerFunc) {
 	r.AddMethod(http.MethodOptions, handler)
 }
 
-func (r *Route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
+func (r *route) SetMiddleware(middleware HandlerFunc) IRoute {
+	r.middleware = middleware
+	return r
+}
+
+func (r *route) getRoute() *route {
+	return r
+}
+
+func (r *route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		body, err := ioutil.ReadAll(c.Request.Body)
 		if err != nil {
@@ -80,19 +88,15 @@ func (r *Route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 			headers[k] = v
 		}
 		if r.middleware != nil {
-			message, ok := r.middleware(HttpRequest{
+			message := r.middleware(HttpRequest{
 				Body:    body,
 				Query:   query,
 				Params:  params,
 				Headers: headers,
 				Cookies: c.Request.Cookies(),
 			})
-			if !ok {
-				if message != nil {
-					c.JSON(message.statusCode, message)
-					return
-				}
-				c.JSON(http.StatusOK, nil)
+			if message != nil {
+				c.JSON(message.statusCode, message)
 				return
 			}
 		}

@@ -1,7 +1,7 @@
 package httping
 
 type IServer interface {
-	NewRoute(group *Route, path string) *Route
+	NewRoute(group IRoute, path string) IRoute
 	RunServer() (ServerCloseFunc, chan error)
-	SetMiddleware(middleware MiddlewareFunc) *HttpServer
+	SetMiddleware(middleware HandlerFunc) IServer
 }

@@ -6,32 +6,32 @@ import (
 	"strconv"
 )
 
-func NewHttpServer(port int) *HttpServer {
+func NewHttpServer(host string, port int) IServer {
 	engine := gin.Default()
 	engine.HandleMethodNotAllowed = true
 	server := &http.Server{
-		Addr:    ":" + strconv.Itoa(port),
+		Addr:    host + ":" + strconv.Itoa(port),
 		Handler: engine,
 	}
-	return &HttpServer{server: server, engine: engine}
+	return &httpServer{server: server, engine: engine}
 }
 
-type HttpServer struct {
+type httpServer struct {
 	server     *http.Server
 	engine     *gin.Engine
-	middleware MiddlewareFunc
+	middleware HandlerFunc
 }
 
-func (server *HttpServer) NewRoute(baseRoute *Route, path string) *Route {
+func (server *httpServer) NewRoute(baseRoute IRoute, path string) IRoute {
 	if baseRoute != nil {
-		g := baseRoute.route.Group(path)
-		return &Route{route: g}
+		g := baseRoute.getRoute().route.Group(path)
+		return &route{route: g, middleware: baseRoute.getRoute().middleware}
 	}
 	g := server.engine.Group(path)
-	return &Route{route: g, middleware: server.middleware}
+	return &route{route: g, middleware: server.middleware}
 }
 
-func (server *HttpServer) RunServer() (ServerCloseFunc, chan error) {
+func (server *httpServer) RunServer() (ServerCloseFunc, chan error) {
 	chErr := make(chan error)
 	go func(server *http.Server) {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -43,7 +43,7 @@ func (server *HttpServer) RunServer() (ServerCloseFunc, chan error) {
 	}, chErr
 }
 
-func (server *HttpServer) SetMiddleware(middleware MiddlewareFunc) *HttpServer {
+func (server *httpServer) SetMiddleware(middleware HandlerFunc) IServer {
 	server.middleware = middleware
 	return server
 }
