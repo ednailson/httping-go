@@ -86,3 +86,7 @@ continue the request for the `HandleFunc`
 * `NewServer` requires a host. It can run local if it receives `""` as host parameter.
 * Middleware function can be set on IRoute. It will be replace the server middleware function only on that route.
 * `NewServer` and `NewRoute` return only interfaces now on.
+
+### 0.9.1
+
+* CORS support on the server
