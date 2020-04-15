@@ -398,6 +398,23 @@ func TestRouteWithMiddleware(t *testing.T) {
 	Expect(body).Should(MatchJSON([]byte(`{"status":"fail","data":"server middleware"}`)))
 }
 
+func TestHttpServerWithCors(t *testing.T) {
+	RegisterTestingT(t)
+	server := NewHttpServer("", port, true)
+	server.NewRoute(nil, "/").POST(func(request HttpRequest) *ResponseMessage {
+		return InternalServerError("internal server error")
+	})
+	server.RunServer()
+	req, err := http.NewRequest(http.MethodOptions, baseUrl, nil)
+	Expect(err).ToNot(HaveOccurred())
+	resp, err := http.DefaultClient.Do(req)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusOK))
+	resp, err = http.Post(baseUrl, "application/json", nil)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusInternalServerError))
+}
+
 func closingServer(closeServerFn ServerCloseFunc) {
 	err := closeServerFn()
 	Expect(err).ShouldNot(HaveOccurred())
