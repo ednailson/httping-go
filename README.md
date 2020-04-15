@@ -15,10 +15,17 @@ go get github.com/ednailson/httping-go
 ### Creating a server
 
 ```go
-server := httping.NewHttpServer(3000)
+server := httping.NewHttpServer("", 3000)
 ``` 
 
 Here a **http server** was created on the port `3000` and from the server is possible to create _http routes_.
+
+It is possible to set a server with CORS configuration. Just need to set true on the new server
+
+
+```go
+server := httping.NewHttpServer("", 3000, true)
+```  
 
 ### Creating a route
 
