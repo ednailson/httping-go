@@ -16,13 +16,13 @@ func NewHttpServer(host string, port int, cors ...bool) IServer {
 		Addr:    host + ":" + strconv.Itoa(port),
 		Handler: engine,
 	}
-	return &httpServer{server: server, engine: engine}
+	return &httpServer{server: server, engine: engine, middleware: []HandlerFunc{}}
 }
 
 type httpServer struct {
 	server     *http.Server
 	engine     *gin.Engine
-	middleware HandlerFunc
+	middleware []HandlerFunc
 }
 
 func (server *httpServer) NewRoute(baseRoute IRoute, path string) IRoute {
@@ -46,8 +46,13 @@ func (server *httpServer) RunServer() (ServerCloseFunc, chan error) {
 	}, chErr
 }
 
-func (server *httpServer) SetMiddleware(middleware HandlerFunc) IServer {
+func (server *httpServer) SetMiddleware(middleware []HandlerFunc) IServer {
 	server.middleware = middleware
+	return server
+}
+
+func (server *httpServer) AddMiddleware(middleware HandlerFunc) IServer {
+	server.middleware = append(server.middleware, middleware)
 	return server
 }
 
