@@ -122,15 +122,15 @@ server.NewRoute(nil, "/create").POST(func(request httping.HttpRequest) (int, *ht
 It will return a status code ok (200) with the data `data example`
 You can check all the helpers [here](CHANGELOG.md#050).
 
-### Middleware on the server
+### Middleware on the server or route
 
-It is possible to set a middleware handler function to the server
+It is possible to add a middleware handler function to the server or a route
 
 ```go
-server := httping.NewHttpServer(3000).SetMiddleware(
+server := httping.NewHttpServer(3000).AddMiddleware(
     func(request HttpRequest) (*ResponseMessage) {
         if request.Headers["Authorization"][0] != "token"{
-            return Unauthorized("not authorized")
+            return httping.Unauthorized("not authorized")
         }
         return nil
     }
@@ -141,7 +141,9 @@ If you return `ResponseMessage`: The server will **not** let the request proceed
 
 If you return `nil`, the server will let the request proceed to the route's `handleFunc`
 
-Middleware can also be applied only on a route. If the server has a middleware, the function will be replaced by the route's middleware function.
+Middleware can also be applied only on a route. If the server has a middleware, the function will be added by the route's middleware function.
+
+It is possible to set middleware. It will replaced all the middleware functions on that route or server.
 
 # Developer
 

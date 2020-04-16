@@ -11,7 +11,7 @@ type HandlerFunc func(request HttpRequest) (response *ResponseMessage)
 
 type route struct {
 	route      *gin.RouterGroup
-	middleware HandlerFunc
+	middleware []HandlerFunc
 }
 
 func (r *route) AddMethod(method string, handler HandlerFunc) {
@@ -62,8 +62,13 @@ func (r *route) OPTIONS(handler HandlerFunc) {
 	r.AddMethod(http.MethodOptions, handler)
 }
 
-func (r *route) SetMiddleware(middleware HandlerFunc) IRoute {
+func (r *route) SetMiddleware(middleware []HandlerFunc) IRoute {
 	r.middleware = middleware
+	return r
+}
+
+func (r *route) AddMiddleware(middleware HandlerFunc) IRoute {
+	r.middleware = append(r.middleware, middleware)
 	return r
 }
 
@@ -87,17 +92,21 @@ func (r *route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 		for k, v := range c.Request.Header {
 			headers[k] = v
 		}
-		if r.middleware != nil {
-			message := r.middleware(HttpRequest{
-				Body:    body,
-				Query:   query,
-				Params:  params,
-				Headers: headers,
-				Cookies: c.Request.Cookies(),
-			})
-			if message != nil {
-				c.JSON(message.statusCode, message)
-				return
+		if r.middleware != nil && len(r.middleware) > 0 {
+			for _, middleware := range r.middleware {
+				if middleware != nil {
+					message := middleware(HttpRequest{
+						Body:    body,
+						Query:   query,
+						Params:  params,
+						Headers: headers,
+						Cookies: c.Request.Cookies(),
+					})
+					if message != nil {
+						c.JSON(message.statusCode, message)
+						return
+					}
+				}
 			}
 		}
 		message := handle(HttpRequest{

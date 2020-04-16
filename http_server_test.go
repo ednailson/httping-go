@@ -13,6 +13,7 @@ import (
 const port = 5001
 const baseUrl = "http://localhost:5001"
 const defaultPath = "/test"
+const applicationJson = "application/json"
 
 func TestNewServer(t *testing.T) {
 	RegisterTestingT(t)
@@ -238,12 +239,12 @@ func TestCloseServerFunc(t *testing.T) {
 func TestServerWithMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	const token = "b4357690-1a01-4fc5-8243-2c2f32b9fc26"
-	server := NewHttpServer("", port).SetMiddleware(func(request HttpRequest) *ResponseMessage {
+	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
 		if request.Headers["Authorization"][0] != token {
 			return Unauthorized("not authorized")
 		}
 		return nil
-	})
+	}))
 	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		return OK("middleware ok")
 	})
@@ -271,9 +272,9 @@ func TestServerWithMiddleware(t *testing.T) {
 func TestNullResponsesOnMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	RegisterTestingT(t)
-	server := NewHttpServer("", port).SetMiddleware(func(request HttpRequest) *ResponseMessage {
+	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
 		return NoContent()
-	})
+	}))
 	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		return OK("success")
 	})
@@ -357,13 +358,13 @@ func TestNoContentResponse(t *testing.T) {
 
 func TestRouteWithMiddleware(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer("", port).SetMiddleware(func(request HttpRequest) *ResponseMessage {
+	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
 		return Unauthorized("server middleware")
-	})
+	}))
 	defaultRoute := server.NewRoute(nil, defaultPath).
-		SetMiddleware(func(request HttpRequest) *ResponseMessage {
+		SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
 			return InternalServerError("middleware route")
-		})
+		}))
 	defaultRoute.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
 		return OK("middleware ok")
 	})
@@ -404,7 +405,8 @@ func TestHttpServerWithCors(t *testing.T) {
 	server.NewRoute(nil, "/").POST(func(request HttpRequest) *ResponseMessage {
 		return InternalServerError("internal server error")
 	})
-	server.RunServer()
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
 	req, err := http.NewRequest(http.MethodOptions, baseUrl, nil)
 	Expect(err).ToNot(HaveOccurred())
 	resp, err := http.DefaultClient.Do(req)
@@ -413,6 +415,76 @@ func TestHttpServerWithCors(t *testing.T) {
 	resp, err = http.Post(baseUrl, "application/json", nil)
 	Expect(err).ToNot(HaveOccurred())
 	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusInternalServerError))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
+func TestManyMiddleware(t *testing.T) {
+	RegisterTestingT(t)
+	middlewareFuncServer := handleFuncCheckHeaderOrNil("Server", "middleware server", http.StatusInternalServerError)
+	server := NewHttpServer("", port, true).AddMiddleware(middlewareFuncServer)
+	middlewareFuncRoute := handleFuncCheckHeaderOrNil("Route", "middleware route", http.StatusUnauthorized)
+	middlewareRoute := server.NewRoute(nil, "/middleware").AddMiddleware(middlewareFuncRoute)
+	middlewareRoute.POST(func(request HttpRequest) *ResponseMessage {
+		return OK("success")
+	})
+	middlewareFuncExtraRoute := handleFuncCheckHeaderOrNil("Extra", "middleware extra route", http.StatusBadRequest)
+	middlewareExtraRoute := server.NewRoute(middlewareRoute, "/extra").AddMiddleware(middlewareFuncExtraRoute)
+	middlewareExtraRoute.POST(func(request HttpRequest) *ResponseMessage {
+		return NoContent()
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	const middlewareUrl = baseUrl + "/middleware"
+	const middlewareExtraUrl = middlewareUrl + "/extra"
+	resp, err := http.Post(middlewareUrl, applicationJson, nil)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusInternalServerError))
+	resp, err = http.Post(middlewareExtraUrl, applicationJson, nil)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusInternalServerError))
+	req, err := http.NewRequest(http.MethodPost, middlewareUrl, nil)
+	Expect(err).ToNot(HaveOccurred())
+	req.Header.Add("server", "middleware server")
+	resp, err = http.DefaultClient.Do(req)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusUnauthorized))
+	req.Header.Add("route", "middleware route")
+	resp, err = http.DefaultClient.Do(req)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusOK))
+	req, err = http.NewRequest(http.MethodPost, middlewareExtraUrl, nil)
+	Expect(err).ToNot(HaveOccurred())
+	req.Header.Add("server", "middleware server")
+	resp, err = http.DefaultClient.Do(req)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusUnauthorized))
+	req.Header.Add("route", "middleware route")
+	resp, err = http.DefaultClient.Do(req)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusBadRequest))
+	req.Header.Add("extra", "middleware extra route")
+	resp, err = http.DefaultClient.Do(req)
+	Expect(err).ToNot(HaveOccurred())
+	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusNoContent))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
+func handleFuncCheckHeaderOrNil(header, value string, statusCode int) HandlerFunc {
+	return func(request HttpRequest) *ResponseMessage {
+		if request.Headers[header] == nil {
+			return NewResponse(statusCode)
+		}
+		if request.Headers[header][0] != value {
+			return NewResponse(statusCode)
+		}
+		return nil
+	}
+}
+
+func middlewareSlice(handler HandlerFunc) []HandlerFunc {
+	var middleware []HandlerFunc
+	middleware = append(middleware, handler)
+	return middleware
 }
 
 func closingServer(closeServerFn ServerCloseFunc) {
