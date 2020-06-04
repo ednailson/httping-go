@@ -9,7 +9,7 @@ A helper to create APIs on golang with [JSend responses](https://github.com/omni
 **Download**
 
 ```bash
-go get github.com/ntopus/httping-go
+go get github.com/ednailson/httping-go
 ```
 
 ### Creating a server
