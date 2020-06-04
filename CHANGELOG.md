@@ -100,3 +100,7 @@ continue the request for the `HandleFunc`
 ## 0.11.0
 
 * Fixing go mod
+
+## 0.12.0
+
+* Fixing go mod
