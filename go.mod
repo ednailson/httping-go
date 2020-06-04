@@ -1,4 +1,4 @@
-module github.com/ednailson/httping-go
+module github.com/ntopus/httping-go
 
 go 1.13
 

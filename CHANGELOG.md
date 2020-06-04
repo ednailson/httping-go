@@ -91,8 +91,12 @@ continue the request for the `HandleFunc`
 
 * CORS support on the server
 
-### 0.10.0
+## 0.10.0
 
 * Support a many middleware functions
 * `SetMiddleware` sets a slice of `HandleFunc`
 * `AddMiddleware` add a new function to the middleware
+
+## 0.11.0
+
+* Fixing go mod
