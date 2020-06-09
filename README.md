@@ -4,6 +4,8 @@ A helper to create APIs on golang with [JSend responses](https://github.com/omni
 
 * **[CHANGELOG](CHANGELOG.md)**
 
+Checkout some [example](http_server_test.go).
+
 ## Getting started
 
 **Download**
@@ -52,7 +54,7 @@ So now there are two new **routes**: `http://localhost:3000/example/create` and 
 ### Adding a method on the route
 
 ```go
-routeExample.AddMethod("POST", func(request HttpRequest) (int, *ResponseMessage) {
+routeExample.AddMethod("POST", func(request httping.HttpRequest) httping.IResponse {
     if len(request.body) == 0 {
         return httping.NewResponse(404)
     }
@@ -67,7 +69,7 @@ _p.s.: only http methods and http codes are allowed_
 And it is possible to add different **methods** on the same **route**. 
 
 ```go
-routeExample.AddMethod("GET", func(request HttpRequest) (int, *ResponseMessage) {
+routeExample.AddMethod("GET", func(request httping.HttpRequest) httping.IResponse {
     if len(request.body) == 0 {
         return httping.NewResponse(404)
     }
@@ -80,7 +82,7 @@ Now the route `http://localhost:3000/example` has the **methods** `GET` and `POS
 If you will not use the route two or more times you can directly create a route and add a method 
 
 ```go
-server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
+server.NewRoute(nil, "/create").AddMethod("POST", func(request httping.HttpRequest) httping.IResponse {
 		return httping.NewResponse(200)
 	})
 ```
@@ -100,7 +102,7 @@ This will build a Response message with the status correct according with the ht
 **Example**
 
 ```go
-server.NewRoute(nil, "/create").POST(func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
+server.NewRoute(nil, "/create").POST(func(request httping.HttpRequest) httping.IResponse {
 		return httping.NewResponse(200).AddData("success")
 	})
 ```
@@ -114,7 +116,7 @@ There are a few helpers for the most commons http status codes.
 **Example**
 
 ```go
-server.NewRoute(nil, "/create").POST(func(request httping.HttpRequest) (int, *httping.ResponseMessage) {
+server.NewRoute(nil, "/create").POST(func(request httping.HttpRequest) httping.IResponse {
 		return httping.OK("data example")
 	})
 ```
@@ -128,7 +130,7 @@ It is possible to add a middleware handler function to the server or a route
 
 ```go
 server := httping.NewHttpServer(3000).AddMiddleware(
-    func(request HttpRequest) (*ResponseMessage) {
+    func(request httping.HttpRequest) httping.IResponse {
         if request.Headers["Authorization"][0] != "token"{
             return httping.Unauthorized("not authorized")
         }
@@ -137,7 +139,7 @@ server := httping.NewHttpServer(3000).AddMiddleware(
 )
 ```
 
-If you return `ResponseMessage`: The server will **not** let the request proceed and it will return the response returned.
+If you return `IResponse`: The server will **not** let the request proceed and it will return the response returned.
 
 If you return `nil`, the server will let the request proceed to the route's `handleFunc`
 

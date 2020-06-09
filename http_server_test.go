@@ -34,7 +34,7 @@ func TestNewRouteWithPOST(t *testing.T) {
 	const method = http.MethodPost
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	handleFunc := func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) IResponse {
 		return NewResponse(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
@@ -49,7 +49,7 @@ func TestNewRouteWithGET(t *testing.T) {
 	const method = http.MethodGet
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	handleFunc := func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) IResponse {
 		return NewResponse(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
@@ -64,7 +64,7 @@ func TestNewRouteWithPUT(t *testing.T) {
 	const method = http.MethodPut
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	handleFunc := func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) IResponse {
 		return NewResponse(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
@@ -79,7 +79,7 @@ func TestNewRouteWithPATCH(t *testing.T) {
 	const method = http.MethodPatch
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	handleFunc := func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) IResponse {
 		return NewResponse(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
@@ -94,7 +94,7 @@ func TestNewRouteWithHEAD(t *testing.T) {
 	const method = http.MethodHead
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	handleFunc := func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) IResponse {
 		return NewResponse(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
@@ -109,7 +109,7 @@ func TestNewRouteWithOPTIONS(t *testing.T) {
 	const method = http.MethodOptions
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	handleFunc := func(request HttpRequest) *ResponseMessage {
+	handleFunc := func(request HttpRequest) IResponse {
 		return NewResponse(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
@@ -123,7 +123,7 @@ func TestRunServer(t *testing.T) {
 	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		if string(request.Body) == "success" {
 			return NewResponse(http.StatusOK)
 		}
@@ -155,7 +155,7 @@ func TestResponseWithStruct(t *testing.T) {
 	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		type TestResponse struct {
 			Test  string `json:"test"`
 			Test2 string `json:"test2"`
@@ -182,7 +182,7 @@ func TestRequestAndResponseWithHeaders(t *testing.T) {
 	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		response := NewResponse(http.StatusOK)
 		Expect(request.Headers["Header-Test"][0]).Should(BeEquivalentTo("header test 1"))
 		Expect(request.Headers["Header-Test"][1]).Should(BeEquivalentTo("header test 2"))
@@ -217,7 +217,7 @@ func TestCloseServerFunc(t *testing.T) {
 	server := NewHttpServer("", port)
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
-	route.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		if string(request.Body) == "success" {
 			return NewResponse(http.StatusOK)
 		}
@@ -239,13 +239,13 @@ func TestCloseServerFunc(t *testing.T) {
 func TestServerWithMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	const token = "b4357690-1a01-4fc5-8243-2c2f32b9fc26"
-	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
+	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
 		if request.Headers["Authorization"][0] != token {
 			return Unauthorized("not authorized")
 		}
 		return nil
 	}))
-	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		return OK("middleware ok")
 	})
 	closeServer, chErr := server.RunServer()
@@ -272,10 +272,10 @@ func TestServerWithMiddleware(t *testing.T) {
 func TestNullResponsesOnMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	RegisterTestingT(t)
-	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
+	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
 		return NoContent()
 	}))
-	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		return OK("success")
 	})
 	closeServer, chErr := server.RunServer()
@@ -294,7 +294,7 @@ func TestNullResponsesOnHandler(t *testing.T) {
 	RegisterTestingT(t)
 	RegisterTestingT(t)
 	server := NewHttpServer("", port)
-	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		return nil
 	})
 	closeServer, chErr := server.RunServer()
@@ -316,7 +316,7 @@ func TestRequestAndResponseWithCookies(t *testing.T) {
 		Name:  "test-cookie",
 		Value: "value-cookie",
 	}
-	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) IResponse {
 		Expect(request.Cookies[0].Name).To(BeEquivalentTo(cookie.Name))
 		Expect(request.Cookies[0].Value).To(BeEquivalentTo(cookie.Value))
 		return OK("test").AddCookie(cookie)
@@ -342,7 +342,7 @@ func TestRequestAndResponseWithCookies(t *testing.T) {
 func TestNoContentResponse(t *testing.T) {
 	RegisterTestingT(t)
 	server := NewHttpServer("", port)
-	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) IResponse {
 		return NoContent()
 	})
 	closeServer, chErr := server.RunServer()
@@ -358,14 +358,14 @@ func TestNoContentResponse(t *testing.T) {
 
 func TestRouteWithMiddleware(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
+	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
 		return Unauthorized("server middleware")
 	}))
 	defaultRoute := server.NewRoute(nil, defaultPath).
-		SetMiddleware(middlewareSlice(func(request HttpRequest) *ResponseMessage {
+		SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
 			return InternalServerError("middleware route")
 		}))
-	defaultRoute.AddMethod(http.MethodPost, func(request HttpRequest) *ResponseMessage {
+	defaultRoute.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		return OK("middleware ok")
 	})
 	closeServer, chErr := server.RunServer()
@@ -379,7 +379,7 @@ func TestRouteWithMiddleware(t *testing.T) {
 	Expect(body).Should(MatchJSON([]byte(`{"status":"error","message":"middleware route"}`)))
 	Eventually(chErr).ShouldNot(Receive())
 	const extendedPath = "/extended"
-	server.NewRoute(defaultRoute, extendedPath).POST(func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(defaultRoute, extendedPath).POST(func(request HttpRequest) IResponse {
 		return OK("route extended response")
 	})
 	resp, err = http.Post(baseUrl+defaultPath+extendedPath, "application/json", nil)
@@ -388,7 +388,7 @@ func TestRouteWithMiddleware(t *testing.T) {
 	body, err = ioutil.ReadAll(resp.Body)
 	Expect(err).ShouldNot(HaveOccurred())
 	Expect(body).Should(MatchJSON([]byte(`{"status":"error","message":"middleware route"}`)))
-	server.NewRoute(nil, extendedPath).POST(func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(nil, extendedPath).POST(func(request HttpRequest) IResponse {
 		return OK("extended path without test")
 	})
 	resp, err = http.Post(baseUrl+extendedPath, "application/json", nil)
@@ -402,7 +402,7 @@ func TestRouteWithMiddleware(t *testing.T) {
 func TestHttpServerWithCors(t *testing.T) {
 	RegisterTestingT(t)
 	server := NewHttpServer("", port, true)
-	server.NewRoute(nil, "/").POST(func(request HttpRequest) *ResponseMessage {
+	server.NewRoute(nil, "/").POST(func(request HttpRequest) IResponse {
 		return InternalServerError("internal server error")
 	})
 	closeServer, chErr := server.RunServer()
@@ -424,12 +424,12 @@ func TestManyMiddleware(t *testing.T) {
 	server := NewHttpServer("", port, true).AddMiddleware(middlewareFuncServer)
 	middlewareFuncRoute := handleFuncCheckHeaderOrNil("Route", "middleware route", http.StatusUnauthorized)
 	middlewareRoute := server.NewRoute(nil, "/middleware").AddMiddleware(middlewareFuncRoute)
-	middlewareRoute.POST(func(request HttpRequest) *ResponseMessage {
+	middlewareRoute.POST(func(request HttpRequest) IResponse {
 		return OK("success")
 	})
 	middlewareFuncExtraRoute := handleFuncCheckHeaderOrNil("Extra", "middleware extra route", http.StatusBadRequest)
 	middlewareExtraRoute := server.NewRoute(middlewareRoute, "/extra").AddMiddleware(middlewareFuncExtraRoute)
-	middlewareExtraRoute.POST(func(request HttpRequest) *ResponseMessage {
+	middlewareExtraRoute.POST(func(request HttpRequest) IResponse {
 		return NoContent()
 	})
 	closeServer, chErr := server.RunServer()
@@ -470,7 +470,7 @@ func TestManyMiddleware(t *testing.T) {
 }
 
 func handleFuncCheckHeaderOrNil(header, value string, statusCode int) HandlerFunc {
-	return func(request HttpRequest) *ResponseMessage {
+	return func(request HttpRequest) IResponse {
 		if request.Headers[header] == nil {
 			return NewResponse(statusCode)
 		}
