@@ -105,7 +105,7 @@ continue the request for the `HandleFunc`
 
 * Fixing go mod
 
-## 0.14.0 
+## 0.13.0 
 
 * IResponse implemented on the HandleFunc. It was only possible to reply JSend messages, now on, it is possible to
 return anything that implements `IResponse` interface, which means anything besides JSend. 
