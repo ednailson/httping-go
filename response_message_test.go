@@ -16,7 +16,7 @@ func TestNewResponse(t *testing.T) {
 	Expect(resp.Data).To(BeNil())
 	Expect(resp.Message).To(BeEquivalentTo(""))
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusOK))
-	Expect(resp.GetStatusCode()).To(BeEquivalentTo(http.StatusOK))
+	Expect(resp.StatusCode()).To(BeEquivalentTo(http.StatusOK))
 	Expect(len(resp.headers)).To(BeEquivalentTo(0))
 	resp.AddMessage("test message")
 	Expect(resp.Message).To(BeEquivalentTo(""))
@@ -45,7 +45,7 @@ func TestAddCode(t *testing.T) {
 	Expect(resp.Data).To(BeNil())
 	Expect(resp.Message).To(BeEquivalentTo(""))
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusInternalServerError))
-	Expect(resp.GetStatusCode()).To(BeEquivalentTo(http.StatusInternalServerError))
+	Expect(resp.StatusCode()).To(BeEquivalentTo(http.StatusInternalServerError))
 	Expect(len(resp.headers)).To(BeEquivalentTo(0))
 }
 
@@ -88,7 +88,7 @@ func TestAddHeader(t *testing.T) {
 	Expect(resp.statusCode).To(BeEquivalentTo(http.StatusOK))
 	Expect(len(resp.headers)).To(BeEquivalentTo(1))
 	Expect(resp.headers["test key"][0]).To(BeEquivalentTo("test value"))
-	headers := resp.GetHeaders()
+	headers := resp.Headers()
 	Expect(len(headers)).To(BeEquivalentTo(1))
 	Expect(headers["test key"][0]).To(BeEquivalentTo("test value"))
 }
@@ -109,10 +109,10 @@ func TestAddCookie(t *testing.T) {
 	Expect(resp.Code).To(BeEquivalentTo(""))
 	Expect(resp.Data).To(BeNil())
 	Expect(resp.Message).To(BeEquivalentTo(""))
-	Expect(resp.GetStatusCode()).To(BeEquivalentTo(http.StatusOK))
-	Expect(len(resp.GetHeaders())).To(BeEquivalentTo(0))
-	Expect(len(resp.GetCookies())).To(BeEquivalentTo(1))
-	Expect(resp.GetCookies()[0]).To(BeEquivalentTo(cookie))
+	Expect(resp.StatusCode()).To(BeEquivalentTo(http.StatusOK))
+	Expect(len(resp.Headers())).To(BeEquivalentTo(0))
+	Expect(len(resp.Cookies())).To(BeEquivalentTo(1))
+	Expect(resp.Cookies()[0]).To(BeEquivalentTo(cookie))
 }
 
 func TestSetCookies(t *testing.T) {
@@ -134,9 +134,9 @@ func TestSetCookies(t *testing.T) {
 	Expect(resp.Code).To(BeEquivalentTo(""))
 	Expect(resp.Data).To(BeNil())
 	Expect(resp.Message).To(BeEquivalentTo(""))
-	Expect(resp.GetStatusCode()).To(BeEquivalentTo(http.StatusOK))
-	Expect(len(resp.GetHeaders())).To(BeEquivalentTo(0))
-	Expect(len(resp.GetCookies())).To(BeEquivalentTo(2))
-	Expect(resp.GetCookies()[0]).To(BeEquivalentTo(cookie))
-	Expect(resp.GetCookies()[1]).To(BeEquivalentTo(cookie))
+	Expect(resp.StatusCode()).To(BeEquivalentTo(http.StatusOK))
+	Expect(len(resp.Headers())).To(BeEquivalentTo(0))
+	Expect(len(resp.Cookies())).To(BeEquivalentTo(2))
+	Expect(resp.Cookies()[0]).To(BeEquivalentTo(cookie))
+	Expect(resp.Cookies()[1]).To(BeEquivalentTo(cookie))
 }
