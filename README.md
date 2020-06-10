@@ -29,6 +29,12 @@ It is possible to set a server with CORS configuration. Just need to set true on
 server := httping.NewHttpServer("", 3000, true)
 ```  
 
+The server has support to CORS. To enable it, you just need to do
+
+```go
+server.EnableCORS()
+```
+
 ### Creating a route
 
 ```go

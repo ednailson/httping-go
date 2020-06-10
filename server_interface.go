@@ -5,4 +5,5 @@ type IServer interface {
 	RunServer() (ServerCloseFunc, chan error)
 	SetMiddleware(middleware []HandlerFunc) IServer
 	AddMiddleware(middleware HandlerFunc) IServer
+	EnableCORS() IServer
 }
