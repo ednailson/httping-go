@@ -6,12 +6,9 @@ import (
 	"strconv"
 )
 
-func NewHttpServer(host string, port int, cors ...bool) IServer {
+func NewHttpServer(host string, port int) IServer {
 	engine := gin.Default()
 	engine.HandleMethodNotAllowed = true
-	if len(cors) > 0 && cors[0] == true {
-		engine.Use(corsMiddleware())
-	}
 	server := &http.Server{
 		Addr:    host + ":" + strconv.Itoa(port),
 		Handler: engine,
@@ -53,6 +50,11 @@ func (server *httpServer) SetMiddleware(middleware []HandlerFunc) IServer {
 
 func (server *httpServer) AddMiddleware(middleware HandlerFunc) IServer {
 	server.middleware = append(server.middleware, middleware)
+	return server
+}
+
+func (server *httpServer) EnableCORS() IServer {
+	server.engine.Use(corsMiddleware())
 	return server
 }
 
