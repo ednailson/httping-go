@@ -4,7 +4,7 @@ A helper to create APIs on golang with [JSend responses](https://github.com/omni
 
 * **[CHANGELOG](CHANGELOG.md)**
 
-Checkout some [example](http_server_test.go).
+Checkout some [example](examples).
 
 ## Getting started
 
