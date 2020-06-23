@@ -401,7 +401,7 @@ func TestRouteWithMiddleware(t *testing.T) {
 
 func TestHttpServerWithCors(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer("", port, true)
+	server := NewHttpServer("", port).EnableCORS()
 	server.NewRoute(nil, "/").POST(func(request HttpRequest) IResponse {
 		return InternalServerError("internal server error")
 	})
@@ -421,7 +421,7 @@ func TestHttpServerWithCors(t *testing.T) {
 func TestManyMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	middlewareFuncServer := handleFuncCheckHeaderOrNil("Server", "middleware server", http.StatusInternalServerError)
-	server := NewHttpServer("", port, true).AddMiddleware(middlewareFuncServer)
+	server := NewHttpServer("", port).EnableCORS().AddMiddleware(middlewareFuncServer)
 	middlewareFuncRoute := handleFuncCheckHeaderOrNil("Route", "middleware route", http.StatusUnauthorized)
 	middlewareRoute := server.NewRoute(nil, "/middleware").AddMiddleware(middlewareFuncRoute)
 	middlewareRoute.POST(func(request HttpRequest) IResponse {
