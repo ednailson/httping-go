@@ -24,6 +24,37 @@ func TestAccepted(t *testing.T) {
 	checkResponseSuccess(resp, http.StatusAccepted)
 }
 
+func TestNonAuthoritativeInfo(t *testing.T) {
+	RegisterTestingT(t)
+	resp := NonAuthoritativeInfo("test")
+	checkResponseSuccess(resp, http.StatusNonAuthoritativeInfo)
+}
+func TestResetContent(t *testing.T) {
+	RegisterTestingT(t)
+	resp := ResetContent("test")
+	checkResponseSuccess(resp, http.StatusResetContent)
+}
+func TestPartialContent(t *testing.T) {
+	RegisterTestingT(t)
+	resp := PartialContent("test")
+	checkResponseSuccess(resp, http.StatusPartialContent)
+}
+func TestMultiStatus(t *testing.T) {
+	RegisterTestingT(t)
+	resp := MultiStatus("test")
+	checkResponseSuccess(resp, http.StatusMultiStatus)
+}
+func TestAlreadyReported(t *testing.T) {
+	RegisterTestingT(t)
+	resp := AlreadyReported("test")
+	checkResponseSuccess(resp, http.StatusAlreadyReported)
+}
+func TestIMUsed(t *testing.T) {
+	RegisterTestingT(t)
+	resp := IMUsed("test")
+	checkResponseSuccess(resp, http.StatusIMUsed)
+}
+
 func TestNoContent(t *testing.T) {
 	RegisterTestingT(t)
 	resp := NoContent()
@@ -70,6 +101,117 @@ func TestNotAcceptable(t *testing.T) {
 	RegisterTestingT(t)
 	resp := NotAcceptable("test")
 	checkResponseFail(resp, http.StatusNotAcceptable)
+}
+
+func TestProxyAuthRequired(t *testing.T) {
+	RegisterTestingT(t)
+	resp := ProxyAuthRequired("test")
+	checkResponseFail(resp, http.StatusProxyAuthRequired)
+}
+func TestRequestTimeout(t *testing.T) {
+	RegisterTestingT(t)
+	resp := RequestTimeout("test")
+	checkResponseFail(resp, http.StatusRequestTimeout)
+}
+func TestConflict(t *testing.T) {
+	RegisterTestingT(t)
+	resp := Conflict("test")
+	checkResponseFail(resp, http.StatusConflict)
+}
+func TestGone(t *testing.T) {
+	RegisterTestingT(t)
+	resp := Gone("test")
+	checkResponseFail(resp, http.StatusGone)
+}
+func TestLengthRequired(t *testing.T) {
+	RegisterTestingT(t)
+	resp := LengthRequired("test")
+	checkResponseFail(resp, http.StatusLengthRequired)
+}
+func TestPreconditionFailed(t *testing.T) {
+	RegisterTestingT(t)
+	resp := PreconditionFailed("test")
+	checkResponseFail(resp, http.StatusPreconditionFailed)
+}
+func TestRequestEntityTooLarge(t *testing.T) {
+	RegisterTestingT(t)
+	resp := RequestEntityTooLarge("test")
+	checkResponseFail(resp, http.StatusRequestEntityTooLarge)
+}
+func TestRequestURITooLong(t *testing.T) {
+	RegisterTestingT(t)
+	resp := RequestURITooLong("test")
+	checkResponseFail(resp, http.StatusRequestURITooLong)
+}
+func TestUnsupportedMediaType(t *testing.T) {
+	RegisterTestingT(t)
+	resp := UnsupportedMediaType("test")
+	checkResponseFail(resp, http.StatusUnsupportedMediaType)
+}
+func TestRequestedRangeNotSatisfiable(t *testing.T) {
+	RegisterTestingT(t)
+	resp := RequestedRangeNotSatisfiable("test")
+	checkResponseFail(resp, http.StatusRequestedRangeNotSatisfiable)
+}
+func TestExpectationFailed(t *testing.T) {
+	RegisterTestingT(t)
+	resp := ExpectationFailed("test")
+	checkResponseFail(resp, http.StatusExpectationFailed)
+}
+func TestTeapot(t *testing.T) {
+	RegisterTestingT(t)
+	resp := Teapot("test")
+	checkResponseFail(resp, http.StatusTeapot)
+}
+func TestMisdirectedRequest(t *testing.T) {
+	RegisterTestingT(t)
+	resp := MisdirectedRequest("test")
+	checkResponseFail(resp, http.StatusMisdirectedRequest)
+}
+func TestUnprocessableEntity(t *testing.T) {
+	RegisterTestingT(t)
+	resp := UnprocessableEntity("test")
+	checkResponseFail(resp, http.StatusUnprocessableEntity)
+}
+func TestLocked(t *testing.T) {
+	RegisterTestingT(t)
+	resp := Locked("test")
+	checkResponseFail(resp, http.StatusLocked)
+}
+func TestFailedDependency(t *testing.T) {
+	RegisterTestingT(t)
+	resp := FailedDependency("test")
+	checkResponseFail(resp, http.StatusFailedDependency)
+}
+func TestTooEarly(t *testing.T) {
+	RegisterTestingT(t)
+	resp := TooEarly("test")
+	checkResponseFail(resp, http.StatusTooEarly)
+}
+func TestUpgradeRequired(t *testing.T) {
+	RegisterTestingT(t)
+	resp := UpgradeRequired("test")
+	checkResponseFail(resp, http.StatusUpgradeRequired)
+}
+func TestPreconditionRequired(t *testing.T) {
+	RegisterTestingT(t)
+	resp := PreconditionRequired("test")
+	checkResponseFail(resp, http.StatusPreconditionRequired)
+}
+func TestTooManyRequests(t *testing.T) {
+	RegisterTestingT(t)
+	resp := TooManyRequests("test")
+	checkResponseFail(resp, http.StatusTooManyRequests)
+}
+func TestRequestHeaderFieldsTooLarge(t *testing.T) {
+	RegisterTestingT(t)
+	resp := RequestHeaderFieldsTooLarge("test")
+	checkResponseFail(resp, http.StatusRequestHeaderFieldsTooLarge)
+}
+func TestUnavailableForLegalReasons(t *testing.T) {
+	RegisterTestingT(t)
+	resp := UnavailableForLegalReasons("test")
+	checkResponseFail(resp, http.StatusUnavailableForLegalReasons)
 }
 
 func TestInternalServerError(t *testing.T) {

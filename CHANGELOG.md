@@ -113,3 +113,35 @@ return anything that implements `IResponse` interface, which means anything besi
 ## 0.14.0
 
 * `EnableCORS()` now on is a method on the `IServer`. To enable CORS it is only needed to call the method.
+
+### 0.14.1
+
+* Helpers for responses. **Status**: 
+    * ProxyAuthRequired
+    * RequestTimeout
+    * Conflict
+    * Gone
+    * LengthRequired
+    * PreconditionFailed
+    * RequestEntityTooLarge
+    * RequestURITooLong
+    * UnsupportedMediaType
+    * RequestedRangeNotSatisfiable
+    * ExpectationFailed
+    * Teapot
+    * MisdirectedRequest
+    * UnprocessableEntity
+    * Locked
+    * FailedDependency
+    * TooEarly
+    * UpgradeRequired
+    * PreconditionRequired
+    * TooManyRequests
+    * RequestHeaderFieldsTooLarge
+    * UnavailableForLegalReasons
+    * NonAuthoritativeInfo
+    * ResetContent
+    * PartialContent
+    * MultiStatus
+    * AlreadyReported
+    * IMUsed

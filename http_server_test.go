@@ -103,6 +103,21 @@ func TestNewRouteWithHEAD(t *testing.T) {
 	}).To(Panic())
 }
 
+func TestNewRouteWithDELETE(t *testing.T) {
+	RegisterTestingT(t)
+	server := NewHttpServer("", port)
+	const method = http.MethodDelete
+	route := server.NewRoute(nil, defaultPath)
+	Expect(route).ShouldNot(BeNil())
+	handleFunc := func(request HttpRequest) IResponse {
+		return NewResponse(http.StatusOK)
+	}
+	route.AddMethod(method, handleFunc)
+	Expect(func() {
+		route.DELETE(handleFunc)
+	}).To(Panic())
+}
+
 func TestNewRouteWithOPTIONS(t *testing.T) {
 	RegisterTestingT(t)
 	server := NewHttpServer("", port)
@@ -401,7 +416,7 @@ func TestRouteWithMiddleware(t *testing.T) {
 
 func TestHttpServerWithCors(t *testing.T) {
 	RegisterTestingT(t)
-	server := NewHttpServer("", port, true)
+	server := NewHttpServer("", port).EnableCORS()
 	server.NewRoute(nil, "/").POST(func(request HttpRequest) IResponse {
 		return InternalServerError("internal server error")
 	})
@@ -421,7 +436,7 @@ func TestHttpServerWithCors(t *testing.T) {
 func TestManyMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	middlewareFuncServer := handleFuncCheckHeaderOrNil("Server", "middleware server", http.StatusInternalServerError)
-	server := NewHttpServer("", port, true).AddMiddleware(middlewareFuncServer)
+	server := NewHttpServer("", port).EnableCORS().AddMiddleware(middlewareFuncServer)
 	middlewareFuncRoute := handleFuncCheckHeaderOrNil("Route", "middleware route", http.StatusUnauthorized)
 	middlewareRoute := server.NewRoute(nil, "/middleware").AddMiddleware(middlewareFuncRoute)
 	middlewareRoute.POST(func(request HttpRequest) IResponse {
@@ -466,6 +481,29 @@ func TestManyMiddleware(t *testing.T) {
 	resp, err = http.DefaultClient.Do(req)
 	Expect(err).ToNot(HaveOccurred())
 	Expect(resp.StatusCode).To(BeEquivalentTo(http.StatusNoContent))
+	Eventually(chErr).ShouldNot(Receive())
+}
+
+func TestParams(t *testing.T) {
+	RegisterTestingT(t)
+	server := NewHttpServer("", port)
+	const paramPath = "/:param"
+	route := server.NewRoute(nil, paramPath)
+	Expect(route).ShouldNot(BeNil())
+	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
+		if request.Params["param"] == "success" {
+			return NewResponse(http.StatusOK)
+		}
+		return NewResponse(http.StatusNotAcceptable)
+	})
+	closeServer, chErr := server.RunServer()
+	defer closingServer(closeServer)
+	resp, err := http.Post(baseUrl+"/success", "application/json", nil)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusOK))
+	resp, err = http.Post(baseUrl+"/fail", "application/json", nil)
+	Expect(err).ShouldNot(HaveOccurred())
+	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusNotAcceptable))
 	Eventually(chErr).ShouldNot(Receive())
 }
 
