@@ -1,6 +1,11 @@
 # Httping go
 
-A helper to create APIs on golang with [JSend responses](https://github.com/omniti-labs/jsend)
+![Release](https://img.shields.io/badge/release-0.14.1-blue)
+![Coverage](https://img.shields.io/badge/coverage-98%25-success)
+![License](https://img.shields.io/badge/license-MIT-green)
+![GoDoc](https://img.shields.io/badge/godoc-reference-9cf)
+
+A library for creating API's on golang that comes with a [JSend responses](https://github.com/omniti-labs/jsend) helper
 
 * **[CHANGELOG](CHANGELOG.md)**
 

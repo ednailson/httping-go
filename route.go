@@ -14,6 +14,7 @@ type route struct {
 	middleware []HandlerFunc
 }
 
+// Add a HandlerFunc that it will run every time that your server receives a request in the route with the method set up.
 func (r *route) AddMethod(method string, handler HandlerFunc) {
 	method = strings.ToUpper(method)
 	switch method {

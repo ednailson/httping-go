@@ -20,6 +20,7 @@ const (
 	StatusFail    ResponseStatus = "fail"
 )
 
+// JSend helper. It follows all rules of JSend.
 func NewResponse(statusCode int) *ResponseMessage {
 	switch {
 	case statusCode >= http.StatusInternalServerError:
