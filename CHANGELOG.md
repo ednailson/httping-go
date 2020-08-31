@@ -145,3 +145,6 @@ return anything that implements `IResponse` interface, which means anything besi
     * MultiStatus
     * AlreadyReported
     * IMUsed
+    
+### 0.14.2
+* Go doc support
