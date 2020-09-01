@@ -1,9 +1,3 @@
-APPLICATION_NAME := $(shell grep "const ApplicationName " version.go | sed -E 's/.*"(.+)"$$/\1/')
-BIN_NAME=${APPLICATION_NAME}
-
-VERSION := $(shell grep "const Version " version.go | sed -E 's/.*"(.+)"$$/\1/')
-GIT_COMMIT=$(shell git rev-parse HEAD)
-GIT_DIRTY=$(shell test -n "`git status --porcelain`" && echo "+CHANGES" || true)
 default: help
 
 help: ## Presents the available commands
