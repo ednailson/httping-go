@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/ednailson/httping-go"
+	"github.com/ednailson/httping-go/jsend"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func main() {
 
 			//This lib has some helpers to create response with JSend pattern.
 			//Here we are returning a BadRequest with a json data.
-			return httping.BadRequest(`{"body": "body is required"}`)
+			return jsend.BadRequest(`{"body": "body is required"}`)
 		}
 
 		//If the middleware handle function return nil
@@ -64,14 +65,14 @@ func main() {
 func handleFunc() httping.HandlerFunc {
 	return func(request httping.HttpRequest) httping.IResponse {
 		if request.Params["authorization"] == "" {
-			return httping.Unauthorized(map[string]string{
+			return jsend.Unauthorized(map[string]string{
 				"authorization": "unauthorized",
 			})
 		}
 
 		//Anything with the request can be made
 
-		return httping.NoContent()
+		return jsend.NoContent()
 	}
 }
 
@@ -80,6 +81,6 @@ func handleFunc2() httping.HandlerFunc {
 
 		//Anything with the request can be made
 
-		return httping.OK("OK!")
+		return jsend.OK("OK!")
 	}
 }
