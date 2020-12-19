@@ -79,11 +79,7 @@ func (r *route) getRoute() *route {
 
 func (r *route) getHandleFunc(handle HandlerFunc) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		body, err := ioutil.ReadAll(c.Request.Body)
-		if err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
-			return
-		}
+		body, _ := ioutil.ReadAll(c.Request.Body)
 		params := map[string]string{}
 		for _, v := range c.Params {
 			params[v.Key] = v.Value

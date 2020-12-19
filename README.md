@@ -1,7 +1,7 @@
 # Httping go
 
-[![Release](https://img.shields.io/badge/release-0.14.2-blue)](https://github.com/ednailson/httping-go/releases)
-![Coverage](https://img.shields.io/badge/coverage-98%25-success)
+[![Release](https://img.shields.io/badge/release-0.15.0-blue)](https://github.com/ednailson/httping-go/releases)
+![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-9cf)](https://godoc.org/github.com/ednailson/httping-go)
 
@@ -26,13 +26,6 @@ server := httping.NewHttpServer("", 3000)
 ``` 
 
 Here a **http server** was created on the port `3000` and from the server is possible to create _http routes_.
-
-It is possible to set a server with CORS configuration. Just need to set true on the new server
-
-
-```go
-server := httping.NewHttpServer("", 3000, true)
-```  
 
 The server has support to CORS. To enable it, you just need to do
 

@@ -2,6 +2,7 @@ package httping
 
 import (
 	"bytes"
+	"github.com/ednailson/httping-go/jsend"
 	. "github.com/onsi/gomega"
 	"io/ioutil"
 	"net/http"
@@ -35,7 +36,7 @@ func TestNewRouteWithPOST(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) IResponse {
-		return NewResponse(http.StatusOK)
+		return jsend.New(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
 	Expect(func() {
@@ -50,7 +51,7 @@ func TestNewRouteWithGET(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) IResponse {
-		return NewResponse(http.StatusOK)
+		return jsend.New(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
 	Expect(func() {
@@ -65,7 +66,7 @@ func TestNewRouteWithPUT(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) IResponse {
-		return NewResponse(http.StatusOK)
+		return jsend.New(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
 	Expect(func() {
@@ -80,7 +81,7 @@ func TestNewRouteWithPATCH(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) IResponse {
-		return NewResponse(http.StatusOK)
+		return jsend.New(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
 	Expect(func() {
@@ -95,7 +96,7 @@ func TestNewRouteWithHEAD(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) IResponse {
-		return NewResponse(http.StatusOK)
+		return jsend.New(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
 	Expect(func() {
@@ -110,7 +111,7 @@ func TestNewRouteWithDELETE(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) IResponse {
-		return NewResponse(http.StatusOK)
+		return jsend.New(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
 	Expect(func() {
@@ -125,7 +126,7 @@ func TestNewRouteWithOPTIONS(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	handleFunc := func(request HttpRequest) IResponse {
-		return NewResponse(http.StatusOK)
+		return jsend.New(http.StatusOK)
 	}
 	route.AddMethod(method, handleFunc)
 	Expect(func() {
@@ -140,9 +141,9 @@ func TestRunServer(t *testing.T) {
 	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		if string(request.Body) == "success" {
-			return NewResponse(http.StatusOK)
+			return jsend.New(http.StatusOK)
 		}
-		return NewResponse(http.StatusNotAcceptable)
+		return jsend.New(http.StatusNotAcceptable)
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -175,7 +176,7 @@ func TestResponseWithStruct(t *testing.T) {
 			Test  string `json:"test"`
 			Test2 string `json:"test2"`
 		}
-		return NewResponse(http.StatusOK).AddData(TestResponse{
+		return jsend.New(http.StatusOK).AddData(TestResponse{
 			Test:  "field 1",
 			Test2: "field2",
 		})
@@ -198,7 +199,7 @@ func TestRequestAndResponseWithHeaders(t *testing.T) {
 	route := server.NewRoute(nil, defaultPath)
 	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
-		response := NewResponse(http.StatusOK)
+		response := jsend.New(http.StatusOK)
 		Expect(request.Headers["Header-Test"][0]).Should(BeEquivalentTo("header test 1"))
 		Expect(request.Headers["Header-Test"][1]).Should(BeEquivalentTo("header test 2"))
 		Expect(request.Headers["Header-Test2"][0]).Should(BeEquivalentTo("header test 3"))
@@ -234,9 +235,9 @@ func TestCloseServerFunc(t *testing.T) {
 	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		if string(request.Body) == "success" {
-			return NewResponse(http.StatusOK)
+			return jsend.New(http.StatusOK)
 		}
-		return NewResponse(http.StatusNotAcceptable)
+		return jsend.New(http.StatusNotAcceptable)
 	})
 	closeServer, chErr := server.RunServer()
 	resp, err := http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
@@ -256,12 +257,12 @@ func TestServerWithMiddleware(t *testing.T) {
 	const token = "b4357690-1a01-4fc5-8243-2c2f32b9fc26"
 	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
 		if request.Headers["Authorization"][0] != token {
-			return Unauthorized("not authorized")
+			return jsend.Unauthorized("not authorized")
 		}
 		return nil
 	}))
 	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
-		return OK("middleware ok")
+		return jsend.OK("middleware ok")
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -288,10 +289,10 @@ func TestNullResponsesOnMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	RegisterTestingT(t)
 	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
-		return NoContent()
+		return jsend.NoContent()
 	}))
 	server.NewRoute(nil, defaultPath).AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
-		return OK("success")
+		return jsend.OK("success")
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -334,7 +335,7 @@ func TestRequestAndResponseWithCookies(t *testing.T) {
 	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) IResponse {
 		Expect(request.Cookies[0].Name).To(BeEquivalentTo(cookie.Name))
 		Expect(request.Cookies[0].Value).To(BeEquivalentTo(cookie.Value))
-		return OK("test").AddCookie(cookie)
+		return jsend.OK("test").AddCookie(cookie)
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -358,7 +359,7 @@ func TestNoContentResponse(t *testing.T) {
 	RegisterTestingT(t)
 	server := NewHttpServer("", port)
 	server.NewRoute(nil, defaultPath).POST(func(request HttpRequest) IResponse {
-		return NoContent()
+		return jsend.NoContent()
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -374,14 +375,14 @@ func TestNoContentResponse(t *testing.T) {
 func TestRouteWithMiddleware(t *testing.T) {
 	RegisterTestingT(t)
 	server := NewHttpServer("", port).SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
-		return Unauthorized("server middleware")
+		return jsend.Unauthorized("server middleware")
 	}))
 	defaultRoute := server.NewRoute(nil, defaultPath).
 		SetMiddleware(middlewareSlice(func(request HttpRequest) IResponse {
-			return InternalServerError("middleware route")
+			return jsend.InternalServerError("middleware route")
 		}))
 	defaultRoute.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
-		return OK("middleware ok")
+		return jsend.OK("middleware ok")
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -395,7 +396,7 @@ func TestRouteWithMiddleware(t *testing.T) {
 	Eventually(chErr).ShouldNot(Receive())
 	const extendedPath = "/extended"
 	server.NewRoute(defaultRoute, extendedPath).POST(func(request HttpRequest) IResponse {
-		return OK("route extended response")
+		return jsend.OK("route extended response")
 	})
 	resp, err = http.Post(baseUrl+defaultPath+extendedPath, "application/json", nil)
 	Expect(err).ToNot(HaveOccurred())
@@ -404,7 +405,7 @@ func TestRouteWithMiddleware(t *testing.T) {
 	Expect(err).ShouldNot(HaveOccurred())
 	Expect(body).Should(MatchJSON([]byte(`{"status":"error","message":"middleware route"}`)))
 	server.NewRoute(nil, extendedPath).POST(func(request HttpRequest) IResponse {
-		return OK("extended path without test")
+		return jsend.OK("extended path without test")
 	})
 	resp, err = http.Post(baseUrl+extendedPath, "application/json", nil)
 	Expect(err).ToNot(HaveOccurred())
@@ -418,7 +419,7 @@ func TestHttpServerWithCors(t *testing.T) {
 	RegisterTestingT(t)
 	server := NewHttpServer("", port).EnableCORS()
 	server.NewRoute(nil, "/").POST(func(request HttpRequest) IResponse {
-		return InternalServerError("internal server error")
+		return jsend.InternalServerError("internal server error")
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -440,12 +441,12 @@ func TestManyMiddleware(t *testing.T) {
 	middlewareFuncRoute := handleFuncCheckHeaderOrNil("Route", "middleware route", http.StatusUnauthorized)
 	middlewareRoute := server.NewRoute(nil, "/middleware").AddMiddleware(middlewareFuncRoute)
 	middlewareRoute.POST(func(request HttpRequest) IResponse {
-		return OK("success")
+		return jsend.OK("success")
 	})
 	middlewareFuncExtraRoute := handleFuncCheckHeaderOrNil("Extra", "middleware extra route", http.StatusBadRequest)
 	middlewareExtraRoute := server.NewRoute(middlewareRoute, "/extra").AddMiddleware(middlewareFuncExtraRoute)
 	middlewareExtraRoute.POST(func(request HttpRequest) IResponse {
-		return NoContent()
+		return jsend.NoContent()
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -492,9 +493,9 @@ func TestParams(t *testing.T) {
 	Expect(route).ShouldNot(BeNil())
 	route.AddMethod(http.MethodPost, func(request HttpRequest) IResponse {
 		if request.Params["param"] == "success" {
-			return NewResponse(http.StatusOK)
+			return jsend.New(http.StatusOK)
 		}
-		return NewResponse(http.StatusNotAcceptable)
+		return jsend.New(http.StatusNotAcceptable)
 	})
 	closeServer, chErr := server.RunServer()
 	defer closingServer(closeServer)
@@ -510,10 +511,10 @@ func TestParams(t *testing.T) {
 func handleFuncCheckHeaderOrNil(header, value string, statusCode int) HandlerFunc {
 	return func(request HttpRequest) IResponse {
 		if request.Headers[header] == nil {
-			return NewResponse(statusCode)
+			return jsend.New(statusCode)
 		}
 		if request.Headers[header][0] != value {
-			return NewResponse(statusCode)
+			return jsend.New(statusCode)
 		}
 		return nil
 	}

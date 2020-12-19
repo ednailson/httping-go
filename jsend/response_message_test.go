@@ -1,4 +1,4 @@
-package httping
+package jsend
 
 import (
 	. "github.com/onsi/gomega"
@@ -9,7 +9,7 @@ import (
 
 func TestNewResponse(t *testing.T) {
 	RegisterTestingT(t)
-	resp := NewResponse(http.StatusOK)
+	resp := New(http.StatusOK)
 	Expect(resp).ToNot(BeNil())
 	Expect(resp.Status).To(BeEquivalentTo(StatusSuccess))
 	Expect(resp.Code).To(BeEquivalentTo(""))
@@ -26,7 +26,7 @@ func TestNewResponse(t *testing.T) {
 
 func TestAddMessage(t *testing.T) {
 	RegisterTestingT(t)
-	resp := NewResponse(http.StatusInternalServerError).AddMessage("message error")
+	resp := New(http.StatusInternalServerError).AddMessage("message error")
 	Expect(resp).ToNot(BeNil())
 	Expect(resp.Status).To(BeEquivalentTo(StatusError))
 	Expect(resp.Code).To(BeEquivalentTo(""))
@@ -38,7 +38,7 @@ func TestAddMessage(t *testing.T) {
 
 func TestAddCode(t *testing.T) {
 	RegisterTestingT(t)
-	resp := NewResponse(http.StatusInternalServerError).AddCode("CODE-ERROR")
+	resp := New(http.StatusInternalServerError).AddCode("CODE-ERROR")
 	Expect(resp).ToNot(BeNil())
 	Expect(resp.Status).To(BeEquivalentTo(StatusError))
 	Expect(resp.Code).To(BeEquivalentTo("CODE-ERROR"))
@@ -51,7 +51,7 @@ func TestAddCode(t *testing.T) {
 
 func TestFailMessage(t *testing.T) {
 	RegisterTestingT(t)
-	resp := NewResponse(http.StatusBadRequest)
+	resp := New(http.StatusBadRequest)
 	Expect(resp).ToNot(BeNil())
 	Expect(resp.Status).To(BeEquivalentTo(StatusFail))
 	Expect(resp.Code).To(BeEquivalentTo(""))
@@ -67,7 +67,7 @@ func TestFailMessage(t *testing.T) {
 
 func TestAddData(t *testing.T) {
 	RegisterTestingT(t)
-	resp := NewResponse(http.StatusOK).AddData("test")
+	resp := New(http.StatusOK).AddData("test")
 	Expect(resp).ToNot(BeNil())
 	Expect(resp.Status).To(BeEquivalentTo(StatusSuccess))
 	Expect(resp.Data).To(BeEquivalentTo("test"))
@@ -79,7 +79,7 @@ func TestAddData(t *testing.T) {
 
 func TestAddHeader(t *testing.T) {
 	RegisterTestingT(t)
-	resp := NewResponse(http.StatusOK).AddHeader("test key", "test value")
+	resp := New(http.StatusOK).AddHeader("test key", "test value")
 	Expect(resp).ToNot(BeNil())
 	Expect(resp.Status).To(BeEquivalentTo(StatusSuccess))
 	Expect(resp.Code).To(BeEquivalentTo(""))

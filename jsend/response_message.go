@@ -1,4 +1,4 @@
-package httping
+package jsend
 
 import "net/http"
 
@@ -21,7 +21,7 @@ const (
 )
 
 // JSend helper. It follows all rules of JSend.
-func NewResponse(statusCode int) *ResponseMessage {
+func New(statusCode int) *ResponseMessage {
 	switch {
 	case statusCode >= http.StatusInternalServerError:
 		return &ResponseMessage{Status: StatusError, headers: make(map[string][]string), statusCode: statusCode}

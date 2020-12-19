@@ -1,4 +1,4 @@
-package httping
+package jsend
 
 import (
 	. "github.com/onsi/gomega"
@@ -234,6 +234,7 @@ func checkResponseSuccess(resp *ResponseMessage, status int) {
 	Expect(resp.Message).To(BeEquivalentTo(""))
 	Expect(resp.statusCode).To(BeEquivalentTo(status))
 	Expect(len(resp.headers)).To(BeEquivalentTo(0))
+	Expect(resp.Response()).ToNot(BeNil())
 }
 
 func checkResponseFail(resp *ResponseMessage, status int) {
