@@ -148,3 +148,9 @@ return anything that implements `IResponse` interface, which means anything besi
     
 ### 0.14.2
 * Go doc support
+
+## 0.15.0
+
+* JSend response now has its own package
+* The default response helper of the `httping` package does not follow the JSend rules anymore
+* Test covering of 100% 
