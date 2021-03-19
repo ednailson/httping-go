@@ -63,12 +63,12 @@ func (r *route) OPTIONS(handler HandlerFunc) {
 	r.AddMethod(http.MethodOptions, handler)
 }
 
-func (r *route) SetMiddleware(middleware []HandlerFunc) IRoute {
+func (r *route) SetMiddleware(middleware []HandlerFunc) Route {
 	r.middleware = middleware
 	return r
 }
 
-func (r *route) AddMiddleware(middleware HandlerFunc) IRoute {
+func (r *route) AddMiddleware(middleware HandlerFunc) Route {
 	r.middleware = append(r.middleware, middleware)
 	return r
 }

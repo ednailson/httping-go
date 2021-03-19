@@ -1,9 +1,9 @@
 package httping
 
-type IServer interface {
-	NewRoute(group IRoute, path string) IRoute
+type Server interface {
+	NewRoute(group Route, path string) Route
 	RunServer() (ServerCloseFunc, chan error)
-	SetMiddleware(middleware []HandlerFunc) IServer
-	AddMiddleware(middleware HandlerFunc) IServer
-	EnableCORS() IServer
+	SetMiddleware(middleware []HandlerFunc) Server
+	AddMiddleware(middleware HandlerFunc) Server
+	EnableCORS() Server
 }
