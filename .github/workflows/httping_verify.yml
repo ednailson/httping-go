@@ -1,4 +1,4 @@
-name: Ted-Verify
+name: httping-verify
 
 defaults:
   run:
