@@ -5,8 +5,12 @@ help: ## Presents the available commands
 
 up-deps: ## Install project's dependecies
 	go mod tidy
+	go mod download
 
 run-test: ## Run project's tests
+	go test ./...
+
+run-test-coverage: ## Run project's tests and prints coverage
 	mkdir -p ./test/cover
 	go test -race -coverpkg= ./... -coverprofile=./test/cover/cover.out
 	go tool cover -html=./test/cover/cover.out -o ./test/cover/cover.html

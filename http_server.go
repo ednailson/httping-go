@@ -7,7 +7,7 @@ import (
 )
 
 // Creates a HTTP Server
-func NewHttpServer(host string, port int) IServer {
+func NewHttpServer(host string, port int) Server {
 	engine := gin.Default()
 	engine.HandleMethodNotAllowed = true
 	server := &http.Server{
@@ -24,7 +24,7 @@ type httpServer struct {
 }
 
 // It adds a new route to your server. You can add or create as many as you need.
-func (server *httpServer) NewRoute(baseRoute IRoute, path string) IRoute {
+func (server *httpServer) NewRoute(baseRoute Route, path string) Route {
 	if baseRoute != nil {
 		g := baseRoute.getRoute().route.Group(path)
 		return &route{route: g, middleware: baseRoute.getRoute().middleware}
@@ -48,20 +48,20 @@ func (server *httpServer) RunServer() (ServerCloseFunc, chan error) {
 }
 
 // It sets the middleware of your server.
-func (server *httpServer) SetMiddleware(middleware []HandlerFunc) IServer {
+func (server *httpServer) SetMiddleware(middleware []HandlerFunc) Server {
 	server.middleware = middleware
 	return server
 }
 
 // If adds a middleware to your server. It means that all your routes will pass by this middleware.
-// If you need to add a middleware only in a route you can do it on the AddMiddleware func of IRoute
-func (server *httpServer) AddMiddleware(middleware HandlerFunc) IServer {
+// If you need to add a middleware only in a route you can do it on the AddMiddleware func of Route
+func (server *httpServer) AddMiddleware(middleware HandlerFunc) Server {
 	server.middleware = append(server.middleware, middleware)
 	return server
 }
 
 // If you server needs CORS specification you can enable it on your server just calling this function
-func (server *httpServer) EnableCORS() IServer {
+func (server *httpServer) EnableCORS() Server {
 	server.engine.Use(corsMiddleware())
 	return server
 }

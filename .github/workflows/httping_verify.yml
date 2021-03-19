@@ -1,0 +1,36 @@
+name: httping-verify
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!master'
+  pull_request:
+    branches:
+      - '**'
+      - '!master'
+
+jobs:
+  verify:
+    name: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: make up-deps
+
+      - name: Run Tests
+        run: make run-test

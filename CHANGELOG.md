@@ -154,3 +154,8 @@ return anything that implements `IResponse` interface, which means anything besi
 * JSend response now has its own package
 * The default response helper of the `httping` package does not follow the JSend rules anymore
 * Test covering of 100% 
+
+### 0.16.0
+
+* GitHub actions
+* Change name of `Server` and `Route` interface
