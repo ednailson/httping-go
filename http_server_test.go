@@ -240,8 +240,12 @@ func TestCloseServerFunc(t *testing.T) {
 		return jsend.New(http.StatusNotAcceptable)
 	})
 	closeServer, chErr := server.RunServer()
-	resp, err := http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
-	Expect(err).ShouldNot(HaveOccurred())
+	var resp *http.Response
+	var err error
+	Eventually(func() error {
+		resp, err = http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("success")))
+		return err
+	}).ShouldNot(HaveOccurred())
 	Expect(resp.StatusCode).Should(BeEquivalentTo(http.StatusOK))
 	resp, err = http.Post(baseUrl+defaultPath, "application/json", bytes.NewReader([]byte("not success")))
 	Expect(err).ShouldNot(HaveOccurred())
