@@ -8,7 +8,7 @@ up-deps: ## Install project's dependecies
 	go mod download
 
 run-test: ## Run project's tests
-	go test -race ./...
+	go test ./...
 
 run-test-coverage: ## Run project's tests and prints coverage
 	mkdir -p ./test/cover
